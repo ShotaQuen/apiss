@@ -97,5 +97,3 @@ db.initialize()
   });
 
 module.exports = app;
-
-

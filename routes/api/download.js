@@ -2,32 +2,27 @@ const express = require("express");
 const axios = require("axios");
 const router = express.Router();
 
-// GET /youtube-mp3 - YouTube to MP3 Download API
-router.get("/youtube-mp3", async (req, res) => {
+// GET /hydromind - AI Hydromind Chat API
+router.get("/hydromind", async (req, res) => {
   try {
-    const { url } = req.query;
+    const { text, model } = req.query;
 
-    if (!url) {
+    if (!text || !model) {
       return res.status(400).json({
         status: false,
-        error: "URL parameter is required"
+        error: "Text and Model parameters are required"
       });
     }
 
     const responseData = {
       status: true,
       creator: "REST API Website",
-      result: {
-        title: "Sample Video Title",
-        duration: "3:45",
-        download_url: "https://example.com/download.mp3",
-        file_size: "5.2 MB"
-      }
+      result: `AI Response for: ${text} using model: ${model}`
     };
 
     res.json(responseData);
   } catch (error) {
-    console.error("Error in youtube-mp3 API:", error);
+    console.error("Error in hydromind API:", error);
     res.status(500).json({
       status: false,
       error: error.message
@@ -35,15 +30,15 @@ router.get("/youtube-mp3", async (req, res) => {
   }
 });
 
-// GET /youtube-mp4 - YouTube to MP4 Download API
-router.get("/youtube-mp4", async (req, res) => {
+// GET /ai-img - AI Image Generation API
+router.get("/ai-img", async (req, res) => {
   try {
-    const { url, quality = "720p" } = req.query;
+    const { prompt } = req.query;
 
-    if (!url) {
+    if (!prompt) {
       return res.status(400).json({
         status: false,
-        error: "URL parameter is required"
+        error: "Prompt parameter is required"
       });
     }
 
@@ -51,17 +46,14 @@ router.get("/youtube-mp4", async (req, res) => {
       status: true,
       creator: "REST API Website",
       result: {
-        title: "Sample Video Title",
-        duration: "3:45",
-        quality: quality,
-        download_url: "https://example.com/download.mp4",
-        file_size: "25.8 MB"
+        prompt: prompt,
+        image_url: "https://example.com/generated-image.jpg"
       }
     };
 
     res.json(responseData);
   } catch (error) {
-    console.error("Error in youtube-mp4 API:", error);
+    console.error("Error in ai-img API:", error);
     res.status(500).json({
       status: false,
       error: error.message
@@ -69,147 +61,9 @@ router.get("/youtube-mp4", async (req, res) => {
   }
 });
 
-// GET /tiktok - TikTok Download API
-router.get("/tiktok", async (req, res) => {
-  try {
-    const { url } = req.query;
+// Mengumpulkan endpoint secara otomatis
+router.endpoints = collectEndpoints(router);
 
-    if (!url) {
-      return res.status(400).json({
-        status: false,
-        error: "URL parameter is required"
-      });
-    }
-
-    const responseData = {
-      status: true,
-      creator: "REST API Website",
-      result: {
-        title: "Sample TikTok Video",
-        author: "sample_user",
-        download_url: "https://example.com/tiktok-video.mp4",
-        thumbnail: "https://example.com/thumbnail.jpg"
-      }
-    };
-
-    res.json(responseData);
-  } catch (error) {
-    console.error("Error in tiktok API:", error);
-    res.status(500).json({
-      status: false,
-      error: error.message
-    });
-  }
-});
-
-// GET /facebook - Facebook Download API
-router.get("/facebook", async (req, res) => {
-  try {
-    const { url } = req.query;
-
-    if (!url) {
-      return res.status(400).json({
-        status: false,
-        error: "URL parameter is required"
-      });
-    }
-
-    const responseData = {
-      status: true,
-      creator: "REST API Website",
-      result: {
-        title: "Sample Facebook Video",
-        download_url: "https://example.com/facebook-video.mp4",
-        file_size: "15.3 MB"
-      }
-    };
-
-    res.json(responseData);
-  } catch (error) {
-    console.error("Error in facebook API:", error);
-    res.status(500).json({
-      status: false,
-      error: error.message
-    });
-  }
-});
-
-// GET /spotify - Spotify Download API
-router.get("/spotify", async (req, res) => {
-  try {
-    const { url } = req.query;
-
-    if (!url) {
-      return res.status(400).json({
-        status: false,
-        error: "URL parameter is required"
-      });
-    }
-
-    const responseData = {
-      status: true,
-      creator: "REST API Website",
-      result: {
-        title: "Sample Song Title",
-        artist: "Sample Artist",
-        album: "Sample Album",
-        download_url: "https://example.com/spotify-song.mp3",
-        duration: "3:25"
-      }
-    };
-
-    res.json(responseData);
-  } catch (error) {
-    console.error("Error in spotify API:", error);
-    res.status(500).json({
-      status: false,
-      error: error.message
-    });
-  }
-});
-
-// GET /mediafire - MediaFire Download API
-router.get("/mediafire", async (req, res) => {
-  try {
-    const { url } = req.query;
-
-    if (!url) {
-      return res.status(400).json({
-        status: false,
-        error: "URL parameter is required"
-      });
-    }
-
-    const responseData = {
-      status: true,
-      creator: "REST API Website",
-      result: {
-        filename: "sample-file.zip",
-        file_size: "45.7 MB",
-        download_url: "https://example.com/direct-download-link.zip"
-      }
-    };
-
-    res.json(responseData);
-  } catch (error) {
-    console.error("Error in mediafire API:", error);
-    res.status(500).json({
-      status: false,
-      error: error.message
-    });
-  }
-});
-
-router.description = "Media download APIs";
-router.endpoints = [
-  { path: "/youtube-mp3", method: "GET", params: ["url"] },
-  { path: "/youtube-mp4", method: "GET", params: ["url", "quality"] },
-  { path: "/tiktok", method: "GET", params: ["url"] },
-  { path: "/facebook", method: "GET", params: ["url"] },
-  { path: "/spotify", method: "GET", params: ["url"] },
-  { path: "/mediafire", method: "GET", params: ["url"] }
-];
+router.description = "Artificial Intelligence related APIs";
 
 module.exports = router;
-
-
