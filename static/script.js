@@ -15,6 +15,7 @@ const clearFormBtn = document.getElementById('clearForm');
 const responseStatus = document.getElementById('responseStatus');
 const responseContent = document.getElementById('responseContent');
 const loadingOverlay = document.getElementById('loadingOverlay');
+const navMenu = document.getElementById('navMenu');
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
@@ -65,8 +66,7 @@ function initializeNavigation() {
     
     // Mobile menu toggle
     mobileToggle.addEventListener('click', function() {
-        const navMenu = document.querySelector('.nav-menu');
-        navMenu.classList.toggle('show');
+        navMenu.classList.toggle('active');
     });
     
     // Update active nav link on scroll
@@ -626,4 +626,3 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
-
