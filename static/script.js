@@ -15,7 +15,6 @@ const clearFormBtn = document.getElementById('clearForm');
 const responseStatus = document.getElementById('responseStatus');
 const responseContent = document.getElementById('responseContent');
 const loadingOverlay = document.getElementById('loadingOverlay');
-const navMenu = document.getElementById('navMenu');
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
@@ -66,7 +65,8 @@ function initializeNavigation() {
     
     // Mobile menu toggle
     mobileToggle.addEventListener('click', function() {
-        navMenu.classList.toggle('active');
+        const navMenu = document.querySelector('.nav-menu');
+        navMenu.classList.toggle('show');
     });
     
     // Update active nav link on scroll

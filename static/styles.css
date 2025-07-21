@@ -174,35 +174,6 @@ body {
     cursor: pointer;
 }
 
-/* Mobile Menu */
-@media (max-width: 768px) {
-    .nav-menu {
-        display: none;
-        flex-direction: column;
-        align-items: flex-start;
-        position: absolute;
-        top: 70px;
-        left: 0;
-        right: 0;
-        background: var(--bg-primary);
-        border-bottom: 1px solid var(--border-color);
-        z-index: 1000;
-        padding: 1rem;
-    }
-
-    .nav-menu.active {
-        display: flex;
-    }
-
-    .nav-link {
-        margin-bottom: 0.5rem;
-    }
-
-    .mobile-menu-toggle {
-        display: block;
-    }
-}
-
 /* Hero Section */
 .hero {
     padding: 120px 0 80px;
@@ -230,9 +201,9 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 4rem;
-   align-items: center;
-position: relative;
-z-index: 1;
+    align-items: center;
+    position: relative;
+    z-index: 1;
 }
 
 .hero-badge {
@@ -948,38 +919,37 @@ z-index: 1;
     }
     
     .hero {
-        padding
-        : 100px 0 60px;
+        padding: 100px 0 60px;
     }
-
+    
     .hero-title {
         font-size: 2rem;
     }
-
+    
     .hero-description {
         font-size: 1rem;
     }
-
+    
     .hero-buttons {
         flex-direction: column;
         align-items: center;
     }
-
+    
     .btn {
         width: 100%;
         max-width: 200px;
     }
-
+    
     .features,
     .documentation,
     .api-testing {
         padding: 60px 0;
     }
-
+    
     .section-title {
         font-size: 2rem;
     }
-
+    
     .section-description {
         font-size: 1rem;
     }
