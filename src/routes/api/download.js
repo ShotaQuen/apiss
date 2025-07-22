@@ -2,9 +2,9 @@ const express = require("express");
 const axios = require("axios");
 const router = express.Router();
 
-// GET /youtube-mp3 - YouTube to MP3 Download API
+// GET /youtube-mp3 - YouTube to MP3 Download APIt
 // Example Request: { "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ" }
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "title": "Never Gonna Give You Up", "duration": "3:33", "download_url": "https://example.com/rickroll.mp3", "file_size": "3.5 MB" } }
+// Example Response: { "status": true, "creator": "REST API Website", "result": { "title": "Sample Video Title", "duration": "3:45", "download_url": "https://example.com/download.mp3", "file_size": "5.2 MB" } }
 router.get("/youtube-mp3", async (req, res) => {
   try {
     const { url } = req.query;
@@ -20,10 +20,10 @@ router.get("/youtube-mp3", async (req, res) => {
       status: true,
       creator: "REST API Website",
       result: {
-        title: "Never Gonna Give You Up",
-        duration: "3:33",
-        download_url: "https://example.com/rickroll.mp3",
-        file_size: "3.5 MB"
+        title: "Sample Video Title",
+        duration: "3:45",
+        download_url: "https://example.com/download.mp3",
+        file_size: "5.2 MB"
       }
     };
 
@@ -39,7 +39,7 @@ router.get("/youtube-mp3", async (req, res) => {
 
 // GET /youtube-mp4 - YouTube to MP4 Download API
 // Example Request: { "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "quality": "720p" }
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "title": "Never Gonna Give You Up", "duration": "3:33", "quality": "720p", "download_url": "https://example.com/rickroll.mp4", "file_size": "25.0 MB" } }
+// Example Response: { "status": true, "creator": "REST API Website", "result": { "title": "Sample Video Title", "duration": "3:45", "quality": "720p", "download_url": "https://example.com/download.mp4", "file_size": "25.8 MB" } }
 router.get("/youtube-mp4", async (req, res) => {
   try {
     const { url, quality = "720p" } = req.query;
@@ -55,11 +55,11 @@ router.get("/youtube-mp4", async (req, res) => {
       status: true,
       creator: "REST API Website",
       result: {
-        title: "Never Gonna Give You Up",
-        duration: "3:33",
+        title: "Sample Video Title",
+        duration: "3:45",
         quality: quality,
-        download_url: "https://example.com/rickroll.mp4",
-        file_size: "25.0 MB"
+        download_url: "https://example.com/download.mp4",
+        file_size: "25.8 MB"
       }
     };
 
@@ -75,7 +75,7 @@ router.get("/youtube-mp4", async (req, res) => {
 
 // GET /tiktok - TikTok Download API
 // Example Request: { "url": "https://www.tiktok.com/@tiktok/video/7000000000000000000" }
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "title": "Funny Cat Video", "author": "@catlover", "download_url": "https://example.com/tiktok-cat.mp4", "thumbnail": "https://example.com/tiktok-cat-thumb.jpg" } }
+// Example Response: { "status": true, "creator": "REST API Website", "result": { "title": "Sample TikTok Video", "author": "sample_user", "download_url": "https://example.com/tiktok-video.mp4", "thumbnail": "https://example.com/thumbnail.jpg" } }
 router.get("/tiktok", async (req, res) => {
   try {
     const { url } = req.query;
@@ -91,10 +91,10 @@ router.get("/tiktok", async (req, res) => {
       status: true,
       creator: "REST API Website",
       result: {
-        title: "Funny Cat Video",
-        author: "@catlover",
-        download_url: "https://example.com/tiktok-cat.mp4",
-        thumbnail: "https://example.com/tiktok-cat-thumb.jpg"
+        title: "Sample TikTok Video",
+        author: "sample_user",
+        download_url: "https://example.com/tiktok-video.mp4",
+        thumbnail: "https://example.com/thumbnail.jpg"
       }
     };
 
@@ -110,7 +110,7 @@ router.get("/tiktok", async (req, res) => {
 
 // GET /facebook - Facebook Download API
 // Example Request: { "url": "https://www.facebook.com/facebook/videos/1000000000000000/" }
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "title": "Facebook Live Stream", "download_url": "https://example.com/fb-live.mp4", "file_size": "50.0 MB" } }
+// Example Response: { "status": true, "creator": "REST API Website", "result": { "title": "Sample Facebook Video", "download_url": "https://example.com/facebook-video.mp4", "file_size": "15.3 MB" } }
 router.get("/facebook", async (req, res) => {
   try {
     const { url } = req.query;
@@ -126,9 +126,9 @@ router.get("/facebook", async (req, res) => {
       status: true,
       creator: "REST API Website",
       result: {
-        title: "Facebook Live Stream",
-        download_url: "https://example.com/fb-live.mp4",
-        file_size: "50.0 MB"
+        title: "Sample Facebook Video",
+        download_url: "https://example.com/facebook-video.mp4",
+        file_size: "15.3 MB"
       }
     };
 
@@ -144,7 +144,7 @@ router.get("/facebook", async (req, res) => {
 
 // GET /spotify - Spotify Download API
 // Example Request: { "url": "https://open.spotify.com/track/1234567890" }
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "title": "Shape of You", "artist": "Ed Sheeran", "album": "÷ (Divide)", "download_url": "https://example.com/shape-of-you.mp3", "duration": "3:53" } }
+// Example Response: { "status": true, "creator": "REST API Website", "result": { "title": "Sample Song Title", "artist": "Sample Artist", "album": "Sample Album", "download_url": "https://example.com/spotify-song.mp3", "duration": "3:25" } }
 router.get("/spotify", async (req, res) => {
   try {
     const { url } = req.query;
@@ -160,11 +160,11 @@ router.get("/spotify", async (req, res) => {
       status: true,
       creator: "REST API Website",
       result: {
-        title: "Shape of You",
-        artist: "Ed Sheeran",
-        album: "÷ (Divide)",
-        download_url: "https://example.com/shape-of-you.mp3",
-        duration: "3:53"
+        title: "Sample Song Title",
+        artist: "Sample Artist",
+        album: "Sample Album",
+        download_url: "https://example.com/spotify-song.mp3",
+        duration: "3:25"
       }
     };
 
@@ -180,7 +180,7 @@ router.get("/spotify", async (req, res) => {
 
 // GET /mediafire - MediaFire Download API
 // Example Request: { "url": "https://www.mediafire.com/file/abcdefg/sample.zip/file" }
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "filename": "document.pdf", "file_size": "10.2 MB", "download_url": "https://example.com/document.pdf" } }
+// Example Response: { "status": true, "creator": "REST API Website", "result": { "filename": "sample-file.zip", "file_size": "45.7 MB", "download_url": "https://example.com/direct-download-link.zip" } }
 router.get("/mediafire", async (req, res) => {
   try {
     const { url } = req.query;
@@ -196,9 +196,9 @@ router.get("/mediafire", async (req, res) => {
       status: true,
       creator: "REST API Website",
       result: {
-        filename: "document.pdf",
-        file_size: "10.2 MB",
-        download_url: "https://example.com/document.pdf"
+        filename: "sample-file.zip",
+        file_size: "45.7 MB",
+        download_url: "https://example.com/direct-download-link.zip"
       }
     };
 
