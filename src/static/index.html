@@ -61,7 +61,7 @@
                 </div>
                 <div class="hero-stats">
                     <div class="stat">
-                        <div class="stat-number">35+</div>
+                        <div class="stat-number" id="category-count">0</div>
                         <div class="stat-label">API Endpoints</div>
                     </div>
                     <div class="stat">
@@ -331,6 +331,30 @@
   }
 
   countCategories();
+  
+  async function updateStats() {
+    try {
+      const res = await fetch('https://berak-new.vercel.app/api');
+      const data = await res.json();
+
+      // Hitung jumlah kategori
+      const categoryCount = Object.keys(data.categories || {}).length;
+
+      // Ambil total endpoints langsung dari field
+      const endpointCount = data.total_endpoints || 0;
+
+      // Update DOM
+      document.getElementById('category-count').textContent = categoryCount;
+      document.getElementById('endpoint-count').textContent = endpointCount;
+
+    } catch (error) {
+      console.error('Gagal mengambil data:', error);
+      document.getElementById('category-count').textContent = 'Err';
+      document.getElementById('endpoint-count').textContent = 'Err';
+    }
+  }
+
+  updateStats();
 </script>
 </body>
 </html>
