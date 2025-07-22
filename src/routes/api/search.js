@@ -3,6 +3,8 @@ const axios = require("axios");
 const router = express.Router();
 
 // GET /youtube - YouTube Search API
+// Example Request: { "query": "nodejs tutorial", "limit": 5 }
+// Example Response: { "status": true, "creator": "REST API Website", "result": { "query": "nodejs tutorial", "limit": 5, "videos": [ { "title": "Sample Video 1 for nodejs tutorial", "channel": "Sample Channel 1", "duration": "3:45", "views": "1.2M views", "url": "https://youtube.com/watch?v=sample1" } ] } }
 router.get("/youtube", async (req, res) => {
   try {
     const { query, limit = 10 } = req.query;
@@ -41,6 +43,8 @@ router.get("/youtube", async (req, res) => {
 });
 
 // GET /tiktok - TikTok Search API
+// Example Request: { "query": "funny cats", "limit": 5 }
+// Example Response: { "status": true, "creator": "REST API Website", "result": { "query": "funny cats", "limit": 5, "videos": [ { "title": "Sample TikTok 1 for funny cats", "author": "@user1", "likes": "50K", "url": "https://tiktok.com/@user1/video/sample1" } ] } }
 router.get("/tiktok", async (req, res) => {
   try {
     const { query, limit = 10 } = req.query;
@@ -78,6 +82,8 @@ router.get("/tiktok", async (req, res) => {
 });
 
 // GET /pinterest - Pinterest Search API
+// Example Request: { "query": "minimalist design", "limit": 5 }
+// Example Response: { "status": true, "creator": "REST API Website", "result": { "query": "minimalist design", "limit": 5, "pins": [ { "title": "Sample Pin 1 for minimalist design", "image_url": "https://example.com/pin1.jpg", "board": "Sample Board 1", "url": "https://pinterest.com/pin/sample1" } ] } }
 router.get("/pinterest", async (req, res) => {
   try {
     const { query, limit = 10 } = req.query;
@@ -115,6 +121,8 @@ router.get("/pinterest", async (req, res) => {
 });
 
 // GET /news - News Search API
+// Example Request: { "query": "technology news", "limit": 5 }
+// Example Response: { "status": true, "creator": "REST API Website", "result": { "query": "technology news", "limit": 5, "articles": [ { "title": "Sample News 1 about technology news", "source": "News Source 1", "published_at": "2025-07-22T00:00:00.000Z", "url": "https://example.com/news1" } ] } }
 router.get("/news", async (req, res) => {
   try {
     const { query, limit = 10 } = req.query;
@@ -152,6 +160,8 @@ router.get("/news", async (req, res) => {
 });
 
 // GET /capcut - CapCut Search API
+// Example Request: { "query": "capcut template aesthetic", "limit": 5 }
+// Example Response: { "status": true, "creator": "REST API Website", "result": { "query": "capcut template aesthetic", "limit": 5, "templates": [ { "title": "Sample Template 1 for capcut template aesthetic", "creator": "Creator 1", "uses": "100K", "url": "https://capcut.com/template/sample1" } ] } }
 router.get("/capcut", async (req, res) => {
   try {
     const { query, limit = 10 } = req.query;

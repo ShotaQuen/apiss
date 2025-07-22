@@ -3,6 +3,8 @@ const axios = require("axios");
 const router = express.Router();
 
 // GET /hydromind - AI Hydromind Chat API
+// Example Request: { "text": "Hello", "model": "gpt-3.5-turbo" }
+// Example Response: { "status": true, "creator": "REST API Website", "result": "AI Response for: Hello using model: gpt-3.5-turbo" }
 router.get("/hydromind", async (req, res) => {
   try {
     const { text, model } = req.query;
@@ -32,6 +34,8 @@ router.get("/hydromind", async (req, res) => {
 });
 
 // GET /ai-img - AI Image Generation API
+// Example Request: { "prompt": "A cat playing guitar" }
+// Example Response: { "status": true, "creator": "REST API Website", "result": { "prompt": "A cat playing guitar", "image_url": "https://example.com/generated-image.jpg" } }
 router.get("/ai-img", async (req, res) => {
   try {
     const { prompt } = req.query;
@@ -63,6 +67,8 @@ router.get("/ai-img", async (req, res) => {
 });
 
 // GET /luminai - AI Luminai API
+// Example Request: { "text": "What is the capital of France?" }
+// Example Response: { "status": true, "creator": "REST API Website", "result": "Luminai response for: What is the capital of France?" }
 router.get("/luminai", async (req, res) => {
   try {
     const { text } = req.query;
@@ -91,6 +97,8 @@ router.get("/luminai", async (req, res) => {
 });
 
 // GET /openai - OpenAI Chat API
+// Example Request: { "text": "Tell me a joke", "model": "gpt-3.5-turbo" }
+// Example Response: { "status": true, "creator": "REST API Website", "result": "OpenAI gpt-3.5-turbo response for: Tell me a joke" }
 router.get("/openai", async (req, res) => {
   try {
     const { text, model = "gpt-3.5-turbo" } = req.query;
@@ -119,6 +127,8 @@ router.get("/openai", async (req, res) => {
 });
 
 // GET /textoimage - Text to Image API
+// Example Request: { "text": "A beautiful landscape" }
+// Example Response: { "status": true, "creator": "REST API Website", "result": { "text": "A beautiful landscape", "image_url": "https://example.com/text-to-image.jpg" } }
 router.get("/textoimage", async (req, res) => {
   try {
     const { text } = req.query;
