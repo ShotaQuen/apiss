@@ -65,7 +65,7 @@
                         <div class="stat-label">API Endpoints</div>
                     </div>
                     <div class="stat">
-                        <div class="stat-number">6</div>
+                        <div class="stat-number" id="category-count">0</div>
                         <div class="stat-label">Categories</div>
                     </div>
                     <div class="stat">
@@ -315,6 +315,22 @@
   }
 
   fetchAndFormatAPI();
+  
+  async function countCategories() {
+    try {
+      const res = await fetch('https://berak-new.vercel.app/api');
+      const data = await res.json();
+      const categories = data.categories || {};
+      const totalCategories = Object.keys(categories).length;
+
+      document.getElementById('category-count').textContent = totalCategories;
+    } catch (error) {
+      document.getElementById('category-count').textContent = 'Err';
+      console.error('Gagal menghitung kategori:', error);
+    }
+  }
+
+  countCategories();
 </script>
 </body>
 </html>
