@@ -50,7 +50,7 @@ router.get('/ssweb', async (req, res) => {
   try {
     const { url } = req.query;
     
-    if (!text) {
+    if (!url) {
       res.status(400).json({
         status: false,
         error: "Maaf parameter 'url' harus di isi"
