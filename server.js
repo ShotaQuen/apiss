@@ -1,4 +1,3 @@
-// server.js
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
@@ -11,29 +10,12 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
 app.use(express.static(path.join(__dirname, "static")));
 
 const loadRoutes = () => {
-    const routesDir = path.join(__dirname, "routes");
-    const apiRoutesDir = path.join(routesDir, "api");
+    const apiRoutesDir = path.join(__dirname, "routes", "api");
     const categories = {};
     let totalEndpoints = 0;
-
-    // Load user route separately as it's directly under /api
-    const userRoutes = require(path.join(routesDir, "user.js"));
-    app.use("/api", userRoutes);
-    if (userRoutes.endpoints && userRoutes.description) {
-        categories.User = {
-            description: userRoutes.description,
-            endpoints: userRoutes.endpoints.map(ep => ({
-                path: `/api${ep.path}`,
-                method: ep.method,
-                params: ep.params || []
-            }))
-        };
-        totalEndpoints += userRoutes.endpoints.length;
-    }
 
     const apiRouteFiles = fs.readdirSync(apiRoutesDir).filter(file => file.endsWith(".js"));
 
@@ -56,20 +38,20 @@ const loadRoutes = () => {
             totalEndpoints += routeModule.endpoints.length;
         }
     }
+
     return { categories, totalEndpoints };
 };
 
 const { categories, totalEndpoints } = loadRoutes();
 
 app.get("/api", (req, res) => {
-    const apiEndpoints = {
+    res.json({
         status: true,
         creator: "REST API Website",
         message: "Welcome to REST API Documentation",
         total_endpoints: totalEndpoints,
         categories: categories
-    };
-    res.json(apiEndpoints);
+    });
 });
 
 app.get("*", (req, res) => {
