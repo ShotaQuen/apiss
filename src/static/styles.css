@@ -735,15 +735,26 @@ body {
 }
 
 .response-content {
-    overflow-x: auto;
-    max-width: 100%;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    min-height: 300px;
+    overflow-x: auto; /* ⬅️ penting */
+    max-width: 100%;  /* ⬅️ mencegah lebar berlebihan */
+    box-sizing: border-box;
 }
 
 .response-content pre {
-    white-space: pre;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--text-primary);
+    white-space: pre; /* ⬅️ jaga struktur JSON */
     overflow-x: auto;
     display: block;
     max-width: 100%;
+    box-sizing: border-box;
 }
 
 /* Footer */
