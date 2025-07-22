@@ -46,30 +46,44 @@ async function ssweb(url) {
   }
 }
 
-router.get('/ssweb', async (req, res) => {
+router.get("/ssweb", async (req, res) => {
   try {
     const { url } = req.query;
-    
+
     if (!url) {
-      res.status(400).json({
+      return res.status(400).json({
         status: false,
-        error: "Maaf parameter 'url' harus di isi"
-      })
-      
-      const hasil = ssweb(url)
-      res.status(200).json({
-        status: true,
-        creator: 'BerakNew',
-        result: hasil
-      })
+        error: "URL parameter is required"
+      });
     }
-  } catch (err) {
+
+    const result = await ssweb(url);
+
+    if (!result.success) {
+      return res.status(500).json({
+        status: false,
+        error: result.error
+      });
+    }
+
+    res.json({
+      status: true,
+      creator: "REST API Website",
+      result: {
+        url: url,
+        screenshot_url: result.fileUrl,
+        id: result.id,
+        timestamp: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    console.error("Error in screenshot API:", error);
     res.status(500).json({
       status: false,
-      error: "Maaf enpoint / api ini error"
-    })
+      error: error.message
+    });
   }
-})
+});
 
 router.description = "Utility tools and services";
 
