@@ -81,8 +81,8 @@ router.get("/genshin-impact", async (req, res) => {
 });
 
 // GET /free-fire - Free Fire Profile API
-// Example Request: { "uid": "1234567890" }
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "uid": "1234567890", "nickname": "FirePlayer", "level": 60, "rank": "Heroic", "total_matches": 2500, "win_rate": "58.4%", "k_d_ratio": "2.1", "guild": "SampleGuild" } }
+// Example Request: { "uid": "example_value" }
+// Example Response: { "status": true, "creator": "REST API Website", "result": { "uid": "example_value", "nickname": "FirePlayer", "level": 60, "rank": "Heroic", "total_matches": 2500, "win_rate": "58.4%", "k_d_ratio": "2.1", "guild": "SampleGuild" } }
 router.get("/free-fire", async (req, res) => {
   try {
     const { uid } = req.query;

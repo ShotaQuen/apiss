@@ -3,8 +3,8 @@ const axios = require("axios");
 const router = express.Router();
 
 // GET /youtube - YouTube Search API
-// Example Request: { "query": "nodejs tutorial", "limit": 5 }
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "query": "nodejs tutorial", "limit": 5, "videos": [ { "title": "Sample Video 1 for nodejs tutorial", "channel": "Sample Channel 1", "duration": "3:45", "views": "1.2M views", "url": "https://youtube.com/watch?v=sample1" } ] } }
+// Example Request: { "query": "nodejs tutorial", "limit": 3 }
+// Example Response: { "status": true, "creator": "REST API Website", "result": { "query": "nodejs tutorial", "limit": 3, "videos": [ { "title": "Node.js Tutorial for Beginners", "channel": "Academind", "duration": "1:30:00", "views": "5M views", "url": "https://youtube.com/watch?v=someid1" }, { "title": "Learn Node.js in 10 Minutes", "channel": "Web Dev Simplified", "duration": "0:10:00", "views": "1.2M views", "url": "https://youtube.com/watch?v=someid2" } ] } }
 router.get("/youtube", async (req, res) => {
   try {
     const { query, limit = 10 } = req.query;
@@ -22,13 +22,22 @@ router.get("/youtube", async (req, res) => {
       result: {
         query: query,
         limit: parseInt(limit),
-        videos: Array.from({ length: Math.min(parseInt(limit), 5) }, (_, i) => ({
-          title: `Sample Video ${i + 1} for ${query}`,
-          channel: `Sample Channel ${i + 1}`,
-          duration: "3:45",
-          views: "1.2M views",
-          url: `https://youtube.com/watch?v=sample${i + 1}`
-        }))
+        videos: [
+          {
+            title: "Node.js Tutorial for Beginners",
+            channel: "Academind",
+            duration: "1:30:00",
+            views: "5M views",
+            url: "https://youtube.com/watch?v=someid1"
+          },
+          {
+            title: "Learn Node.js in 10 Minutes",
+            channel: "Web Dev Simplified",
+            duration: "0:10:00",
+            views: "1.2M views",
+            url: "https://youtube.com/watch?v=someid2"
+          }
+        ]
       }
     };
 
@@ -43,8 +52,8 @@ router.get("/youtube", async (req, res) => {
 });
 
 // GET /tiktok - TikTok Search API
-// Example Request: { "query": "funny cats", "limit": 5 }
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "query": "funny cats", "limit": 5, "videos": [ { "title": "Sample TikTok 1 for funny cats", "author": "@user1", "likes": "50K", "url": "https://tiktok.com/@user1/video/sample1" } ] } }
+// Example Request: { "query": "funny cats", "limit": 3 }
+// Example Response: { "status": true, "creator": "REST API Website", "result": { "query": "funny cats", "limit": 3, "videos": [ { "title": "Cutest Cat Compilation", "author": "@catlover", "likes": "1.5M", "url": "https://tiktok.com/@catlover/video/someid1" }, { "title": "Cats Doing Funny Things", "author": "@funnyanimals", "likes": "800K", "url": "https://tiktok.com/@funnyanimals/video/someid2" } ] } }
 router.get("/tiktok", async (req, res) => {
   try {
     const { query, limit = 10 } = req.query;
@@ -62,12 +71,20 @@ router.get("/tiktok", async (req, res) => {
       result: {
         query: query,
         limit: parseInt(limit),
-        videos: Array.from({ length: Math.min(parseInt(limit), 5) }, (_, i) => ({
-          title: `Sample TikTok ${i + 1} for ${query}`,
-          author: `@user${i + 1}`,
-          likes: `${Math.floor(Math.random() * 100)}K`,
-          url: `https://tiktok.com/@user${i + 1}/video/sample${i + 1}`
-        }))
+        videos: [
+          {
+            title: "Cutest Cat Compilation",
+            author: "@catlover",
+            likes: "1.5M",
+            url: "https://tiktok.com/@catlover/video/someid1"
+          },
+          {
+            title: "Cats Doing Funny Things",
+            author: "@funnyanimals",
+            likes: "800K",
+            url: "https://tiktok.com/@funnyanimals/video/someid2"
+          }
+        ]
       }
     };
 
@@ -82,8 +99,8 @@ router.get("/tiktok", async (req, res) => {
 });
 
 // GET /pinterest - Pinterest Search API
-// Example Request: { "query": "minimalist design", "limit": 5 }
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "query": "minimalist design", "limit": 5, "pins": [ { "title": "Sample Pin 1 for minimalist design", "image_url": "https://example.com/pin1.jpg", "board": "Sample Board 1", "url": "https://pinterest.com/pin/sample1" } ] } }
+// Example Request: { "query": "minimalist living room", "limit": 3 }
+// Example Response: { "status": true, "creator": "REST API Website", "result": { "query": "minimalist living room", "limit": 3, "pins": [ { "title": "Minimalist Living Room Ideas", "image_url": "https://example.com/pin1.jpg", "board": "Home Decor", "url": "https://pinterest.com/pin/someid1" }, { "title": "Scandinavian Minimalist Design", "image_url": "https://example.com/pin2.jpg", "board": "Interior Design", "url": "https://pinterest.com/pin/someid2" } ] } }
 router.get("/pinterest", async (req, res) => {
   try {
     const { query, limit = 10 } = req.query;
@@ -101,12 +118,20 @@ router.get("/pinterest", async (req, res) => {
       result: {
         query: query,
         limit: parseInt(limit),
-        pins: Array.from({ length: Math.min(parseInt(limit), 5) }, (_, i) => ({
-          title: `Sample Pin ${i + 1} for ${query}`,
-          image_url: `https://example.com/pin${i + 1}.jpg`,
-          board: `Sample Board ${i + 1}`,
-          url: `https://pinterest.com/pin/sample${i + 1}`
-        }))
+        pins: [
+          {
+            title: "Minimalist Living Room Ideas",
+            image_url: "https://example.com/pin1.jpg",
+            board: "Home Decor",
+            url: "https://pinterest.com/pin/someid1"
+          },
+          {
+            title: "Scandinavian Minimalist Design",
+            image_url: "https://example.com/pin2.jpg",
+            board: "Interior Design",
+            url: "https://pinterest.com/pin/someid2"
+          }
+        ]
       }
     };
 
@@ -121,8 +146,8 @@ router.get("/pinterest", async (req, res) => {
 });
 
 // GET /news - News Search API
-// Example Request: { "query": "technology news", "limit": 5 }
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "query": "technology news", "limit": 5, "articles": [ { "title": "Sample News 1 about technology news", "source": "News Source 1", "published_at": "2025-07-22T00:00:00.000Z", "url": "https://example.com/news1" } ] } }
+// Example Request: { "query": "artificial intelligence", "limit": 3 }
+// Example Response: { "status": true, "creator": "REST API Website", "result": { "query": "artificial intelligence", "limit": 3, "articles": [ { "title": "AI Breakthrough in Medical Diagnosis", "source": "Tech News Daily", "published_at": "2025-07-22T10:00:00Z", "url": "https://example.com/news1" }, { "title": "The Future of AI in Robotics", "source": "Science Today", "published_at": "2025-07-21T15:30:00Z", "url": "https://example.com/news2" } ] } }
 router.get("/news", async (req, res) => {
   try {
     const { query, limit = 10 } = req.query;
@@ -140,12 +165,20 @@ router.get("/news", async (req, res) => {
       result: {
         query: query,
         limit: parseInt(limit),
-        articles: Array.from({ length: Math.min(parseInt(limit), 5) }, (_, i) => ({
-          title: `Sample News ${i + 1} about ${query}`,
-          source: `News Source ${i + 1}`,
-          published_at: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
-          url: `https://example.com/news${i + 1}`
-        }))
+        articles: [
+          {
+            title: "AI Breakthrough in Medical Diagnosis",
+            source: "Tech News Daily",
+            published_at: "2025-07-22T10:00:00Z",
+            url: "https://example.com/news1"
+          },
+          {
+            title: "The Future of AI in Robotics",
+            source: "Science Today",
+            published_at: "2025-07-21T15:30:00Z",
+            url: "https://example.com/news2"
+          }
+        ]
       }
     };
 
@@ -160,8 +193,8 @@ router.get("/news", async (req, res) => {
 });
 
 // GET /capcut - CapCut Search API
-// Example Request: { "query": "capcut template aesthetic", "limit": 5 }
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "query": "capcut template aesthetic", "limit": 5, "templates": [ { "title": "Sample Template 1 for capcut template aesthetic", "creator": "Creator 1", "uses": "100K", "url": "https://capcut.com/template/sample1" } ] } }
+// Example Request: { "query": "travel vlog template", "limit": 3 }
+// Example Response: { "status": true, "creator": "REST API Website", "result": { "query": "travel vlog template", "limit": 3, "templates": [ { "title": "Travel Vlog Intro", "creator": "VlogMaster", "uses": "500K", "url": "https://capcut.com/template/someid1" }, { "title": "Adventure Travel Edit", "creator": "ExploreCreator", "uses": "200K", "url": "https://capcut.com/template/someid2" } ] } }
 router.get("/capcut", async (req, res) => {
   try {
     const { query, limit = 10 } = req.query;
@@ -179,12 +212,20 @@ router.get("/capcut", async (req, res) => {
       result: {
         query: query,
         limit: parseInt(limit),
-        templates: Array.from({ length: Math.min(parseInt(limit), 5) }, (_, i) => ({
-          title: `Sample Template ${i + 1} for ${query}`,
-          creator: `Creator ${i + 1}`,
-          uses: `${Math.floor(Math.random() * 1000)}K`,
-          url: `https://capcut.com/template/sample${i + 1}`
-        }))
+        templates: [
+          {
+            title: "Travel Vlog Intro",
+            creator: "VlogMaster",
+            uses: "500K",
+            url: "https://capcut.com/template/someid1"
+          },
+          {
+            title: "Adventure Travel Edit",
+            creator: "ExploreCreator",
+            uses: "200K",
+            url: "https://capcut.com/template/someid2"
+          }
+        ]
       }
     };
 
