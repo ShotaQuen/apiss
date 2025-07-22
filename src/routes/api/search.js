@@ -189,13 +189,6 @@ router.get("/capcut", async (req, res) => {
 });
 
 router.description = "Search engines and content discovery";
-router.endpoints = [
-  { path: "/youtube", method: "GET", params: ["query", "limit"] },
-  { path: "/tiktok", method: "GET", params: ["query", "limit"] },
-  { path: "/pinterest", method: "GET", params: ["query", "limit"] },
-  { path: "/news", method: "GET", params: ["query", "limit"] },
-  { path: "/capcut", method: "GET", params: ["query", "limit"] }
-];
 
 module.exports = router;
 

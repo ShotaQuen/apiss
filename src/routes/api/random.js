@@ -173,12 +173,6 @@ router.get("/waifu", async (req, res) => {
 });
 
 router.description = "Random content generators";
-router.endpoints = [
-  { path: "/anime", method: "GET", params: [] },
-  { path: "/quotes", method: "GET", params: [] },
-  { path: "/blue-archive", method: "GET", params: [] },
-  { path: "/waifu", method: "GET", params: [] }
-];
 
 module.exports = router;
 

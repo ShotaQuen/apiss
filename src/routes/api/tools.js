@@ -232,15 +232,6 @@ router.get("/vcc-generator", async (req, res) => {
 });
 
 router.description = "Utility tools and services";
-router.endpoints = [
-  { path: "/screenshot", method: "GET", params: ["url"] },
-  { path: "/tinyurl", method: "GET", params: ["url"] },
-  { path: "/tempmail", method: "GET", params: ["action"] },
-  { path: "/email-checker", method: "GET", params: ["email"] },
-  { path: "/text-to-speech", method: "GET", params: ["text", "lang"] },
-  { path: "/earthquake-info", method: "GET", params: [] },
-  { path: "/vcc-generator", method: "GET", params: ["type"] }
-];
 
 module.exports = router;
 

@@ -152,12 +152,6 @@ router.get("/npm", async (req, res) => {
 });
 
 router.description = "Account and profile information";
-router.endpoints = [
-  { path: "/mobile-legends", method: "GET", params: ["id", "zone"] },
-  { path: "/genshin-impact", method: "GET", params: ["uid"] },
-  { path: "/free-fire", method: "GET", params: ["uid"] },
-  { path: "/npm", method: "GET", params: ["package"] }
-];
 
 module.exports = router;
 

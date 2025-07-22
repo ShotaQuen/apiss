@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const db = require("../models/database");
 
-// GET /api/users - Get all users
+// GET /users - Get all users
 router.get("/users", async (req, res) => {
   try {
     const users = await db.getAllUsers();
@@ -16,7 +16,7 @@ router.get("/users", async (req, res) => {
   }
 });
 
-// POST /api/users - Create new user
+// POST /users - Create new user
 router.post("/users", async (req, res) => {
   try {
     const { username, email } = req.body;
@@ -46,7 +46,7 @@ router.post("/users", async (req, res) => {
   }
 });
 
-// GET /api/users/:id - Get user by ID
+// GET /users/:id - Get user by ID
 router.get("/users/:id", async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
@@ -69,7 +69,7 @@ router.get("/users/:id", async (req, res) => {
   }
 });
 
-// PUT /api/users/:id - Update user
+// PUT /users/:id - Update user
 router.put("/users/:id", async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
@@ -106,7 +106,7 @@ router.put("/users/:id", async (req, res) => {
   }
 });
 
-// DELETE /api/users/:id - Delete user
+// DELETE /users/:id - Delete user
 router.delete("/users/:id", async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
@@ -132,13 +132,6 @@ router.delete("/users/:id", async (req, res) => {
 });
 
 router.description = "User management APIs";
-router.endpoints = [
-  { path: "/users", method: "GET", params: [] },
-  { path: "/users", method: "POST", params: ["username", "email"] },
-  { path: "/users/:id", method: "GET", params: ["id"] },
-  { path: "/users/:id", method: "PUT", params: ["id", "username", "email"] },
-  { path: "/users/:id", method: "DELETE", params: ["id"] }
-];
 
 module.exports = router;
 

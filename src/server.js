@@ -25,20 +25,44 @@ const loadRoutes = () => {
   const categories = {};
   let totalEndpoints = 0;
 
-  // Load user route separately as it's directly under /api
+  // Helper to extract parameters from route path
+  const extractPathParams = (routePath) => {
+    const params = [];
+    const regex = /:([a-zA-Z0-9_]+)/g;
+    let match;
+    while ((match = regex.exec(routePath)) !== null) {
+      params.push(match[1]);
+    }
+    return params;
+  };
+
+  // Process user route separately
   const userRoutes = require(path.join(routesDir, "user.js"));
   app.use("/api", userRoutes);
-  if (userRoutes.endpoints && userRoutes.description) {
-    categories.User = {
-      description: userRoutes.description,
-      endpoints: userRoutes.endpoints.map(ep => ({
-        path: `/api${ep.path}`,
-        method: ep.method,
-        params: ep.params || []
-      }))
-    };
-    totalEndpoints += userRoutes.endpoints.length;
-  }
+  
+  const userEndpoints = [];
+  userRoutes.stack.forEach(layer => {
+    if (layer.route) {
+      const routePath = layer.route.path;
+      const methods = Object.keys(layer.route.methods);
+      methods.forEach(method => {
+        const fullPath = `/api${routePath}`;
+        const pathParams = extractPathParams(routePath);
+        // For query params, we'll need to manually inspect the handler or assume based on common patterns
+        // For now, we'll just include path params and rely on the previous explicit params for query if available
+        userEndpoints.push({
+          path: fullPath,
+          method: method.toUpperCase(),
+          params: pathParams // Simplified: only path params are auto-detected
+        });
+      });
+    }
+  });
+  categories.User = {
+    description: "User management APIs", // Hardcoded description for user route
+    endpoints: userEndpoints
+  };
+  totalEndpoints += userEndpoints.length;
 
   const apiRouteFiles = fs.readdirSync(apiRoutesDir).filter(file => file.endsWith(".js"));
 
@@ -46,22 +70,31 @@ const loadRoutes = () => {
     const routeName = file.replace(".js", "");
     const routeModule = require(path.join(apiRoutesDir, file));
     
-    // Register the route with Express with /api/:routeName prefix
     const urlPrefix = `/api/${routeName}`;
     app.use(urlPrefix, routeModule);
 
-    // Collect endpoint information if available
-    if (routeModule.endpoints && routeModule.description) {
-      categories[routeName.charAt(0).toUpperCase() + routeName.slice(1)] = {
-        description: routeModule.description,
-        endpoints: routeModule.endpoints.map(ep => ({
-          path: `${urlPrefix}${ep.path}`,
-          method: ep.method,
-          params: ep.params || []
-        }))
-      };
-      totalEndpoints += routeModule.endpoints.length;
-    }
+    const moduleEndpoints = [];
+    routeModule.stack.forEach(layer => {
+      if (layer.route) {
+        const routePath = layer.route.path;
+        const methods = Object.keys(layer.route.methods);
+        methods.forEach(method => {
+          const fullPath = `${urlPrefix}${routePath}`;
+          const pathParams = extractPathParams(routePath);
+          moduleEndpoints.push({
+            path: fullPath,
+            method: method.toUpperCase(),
+            params: pathParams // Simplified: only path params are auto-detected
+          });
+        });
+      }
+    });
+
+    categories[routeName.charAt(0).toUpperCase() + routeName.slice(1)] = {
+      description: routeModule.description || `APIs for ${routeName}`, // Use existing description or default
+      endpoints: moduleEndpoints
+    };
+    totalEndpoints += moduleEndpoints.length;
   }
   return { categories, totalEndpoints };
 };

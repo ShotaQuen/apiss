@@ -201,14 +201,6 @@ router.get("/mediafire", async (req, res) => {
 });
 
 router.description = "Media download APIs";
-router.endpoints = [
-  { path: "/youtube-mp3", method: "GET", params: ["url"] },
-  { path: "/youtube-mp4", method: "GET", params: ["url", "quality"] },
-  { path: "/tiktok", method: "GET", params: ["url"] },
-  { path: "/facebook", method: "GET", params: ["url"] },
-  { path: "/spotify", method: "GET", params: ["url"] },
-  { path: "/mediafire", method: "GET", params: ["url"] }
-];
 
 module.exports = router;
 
