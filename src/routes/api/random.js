@@ -3,7 +3,7 @@ const router = express.Router();
 
 // GET /anime - Random Anime API
 // Example Request: {}
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "title": "Jujutsu Kaisen", "genre": "Action, Dark Fantasy", "year": 2020, "rating": 8.7, "image": "https://example.com/jujutsu-kaisen.jpg" } }
+// Example Response: { "status": true, "creator": "REST API Website", "result": { "title": "Attack on Titan", "genre": "Action, Drama", "year": 2013, "rating": 9.0, "image": "https://example.com/aot.jpg" } }
 router.get("/anime", async (req, res) => {
   try {
     const animeList = [
@@ -27,13 +27,6 @@ router.get("/anime", async (req, res) => {
         year: 2019,
         rating: 8.7,
         image: "https://example.com/demonslayer.jpg"
-      },
-      {
-        title: "Jujutsu Kaisen",
-        genre: "Action, Dark Fantasy",
-        year: 2020,
-        rating: 8.7,
-        image: "https://example.com/jujutsu-kaisen.jpg"
       }
     ];
 
@@ -57,7 +50,7 @@ router.get("/anime", async (req, res) => {
 
 // GET /quotes - Random Quotes API
 // Example Request: {}
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "text": "The only true wisdom is in knowing you know nothing.", "author": "Socrates", "category": "Philosophy" } }
+// Example Response: { "status": true, "creator": "REST API Website", "result": { "text": "The only way to do great work is to love what you do.", "author": "Steve Jobs", "category": "Motivation" } }
 router.get("/quotes", async (req, res) => {
   try {
     const quotes = [
@@ -75,11 +68,6 @@ router.get("/quotes", async (req, res) => {
         text: "The future belongs to those who believe in the beauty of their dreams.",
         author: "Eleanor Roosevelt",
         category: "Dreams"
-      },
-      {
-        text: "The only true wisdom is in knowing you know nothing.",
-        author: "Socrates",
-        category: "Philosophy"
       }
     ];
 
@@ -103,7 +91,7 @@ router.get("/quotes", async (req, res) => {
 
 // GET /blue-archive - Random Blue Archive Character API
 // Example Request: {}
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "name": "Aris", "school": "Millennium Science School", "weapon": "Assault Rifle", "rarity": 3, "image": "https://example.com/aris.jpg" } }
+// Example Response: { "status": true, "creator": "REST API Website", "result": { "name": "Shiroko", "school": "Abydos High School", "weapon": "Assault Rifle", "rarity": 3, "image": "https://example.com/shiroko.jpg" } }
 router.get("/blue-archive", async (req, res) => {
   try {
     const characters = [
@@ -127,13 +115,6 @@ router.get("/blue-archive", async (req, res) => {
         weapon: "Submachine Gun",
         rarity: 3,
         image: "https://example.com/aru.jpg"
-      },
-      {
-        name: "Aris",
-        school: "Millennium Science School",
-        weapon: "Assault Rifle",
-        rarity: 3,
-        image: "https://example.com/aris.jpg"
       }
     ];
 
@@ -157,7 +138,7 @@ router.get("/blue-archive", async (req, res) => {
 
 // GET /waifu - Random Waifu API
 // Example Request: {}
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "name": "Asuna", "anime": "Sword Art Online", "image": "https://example.com/asuna.jpg", "description": "Vice-commander of the Knights of the Blood Oath" } }
+// Example Response: { "status": true, "creator": "REST API Website", "result": { "name": "Rem", "anime": "Re:Zero", "image": "https://example.com/rem.jpg", "description": "Blue-haired maid from Re:Zero" } }
 router.get("/waifu", async (req, res) => {
   try {
     const waifus = [
@@ -178,12 +159,6 @@ router.get("/waifu", async (req, res) => {
         anime: "Demon Slayer",
         image: "https://example.com/nezuko.jpg",
         description: "Demon girl who protects humans"
-      },
-      {
-        name: "Asuna",
-        anime: "Sword Art Online",
-        image: "https://example.com/asuna.jpg",
-        description: "Vice-commander of the Knights of the Blood Oath"
       }
     ];
 

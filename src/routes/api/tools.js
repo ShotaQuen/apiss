@@ -4,7 +4,7 @@ const router = express.Router();
 
 // GET /screenshot - Website Screenshot API
 // Example Request: { "url": "https://www.google.com" }
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "url": "https://www.google.com", "screenshot_url": "https://api.example.com/screenshots/google.png", "timestamp": "2025-07-22T10:00:00.000Z" } }
+// Example Response: { "status": true, "creator": "REST API Website", "result": { "url": "https://www.google.com", "screenshot_url": "https://example.com/screenshot.png", "timestamp": "2025-07-22T10:00:00.000Z" } }
 router.get("/screenshot", async (req, res) => {
   try {
     const { url } = req.query;
@@ -21,7 +21,7 @@ router.get("/screenshot", async (req, res) => {
       creator: "REST API Website",
       result: {
         url: url,
-        screenshot_url: "https://api.example.com/screenshots/google.png",
+        screenshot_url: "https://example.com/screenshot.png",
         timestamp: new Date().toISOString()
       }
     };
@@ -37,8 +37,8 @@ router.get("/screenshot", async (req, res) => {
 });
 
 // GET /tinyurl - URL Shortener API
-// Example Request: { "url": "https://www.longurl.com/very/long/path/to/a/resource" }
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "original_url": "https://www.longurl.com/very/long/path/to/a/resource", "short_url": "https://tinyurl.com/xyz789", "created_at": "2025-07-22T10:00:00.000Z" } }
+// Example Request: { "url": "https://www.longurl.com/very/long/path" }
+// Example Response: { "status": true, "creator": "REST API Website", "result": { "original_url": "https://www.longurl.com/very/long/path", "short_url": "https://tinyurl.com/sample123", "created_at": "2025-07-22T10:00:00.000Z" } }
 router.get("/tinyurl", async (req, res) => {
   try {
     const { url } = req.query;
@@ -55,7 +55,7 @@ router.get("/tinyurl", async (req, res) => {
       creator: "REST API Website",
       result: {
         original_url: url,
-        short_url: "https://tinyurl.com/xyz789",
+        short_url: "https://tinyurl.com/sample123",
         created_at: new Date().toISOString()
       }
     };
@@ -72,7 +72,7 @@ router.get("/tinyurl", async (req, res) => {
 
 // GET /tempmail - Temporary Email API
 // Example Request: { "action": "generate" }
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "email": "random.email123@tempmail.com", "expires_at": "2025-07-23T10:00:00.000Z" } }
+// Example Response: { "status": true, "creator": "REST API Website", "result": { "email": "temp123@tempmail.com", "expires_at": "2025-07-23T10:00:00.000Z" } }
 router.get("/tempmail", async (req, res) => {
   try {
     const { action = "generate" } = req.query;
@@ -84,7 +84,7 @@ router.get("/tempmail", async (req, res) => {
         status: true,
         creator: "REST API Website",
         result: {
-          email: "random.email123@tempmail.com",
+          email: "temp123@tempmail.com",
           expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
         }
       };
@@ -95,10 +95,9 @@ router.get("/tempmail", async (req, res) => {
         result: {
           messages: [
             {
-              from: "sender@example.com",
-              subject: "Your verification code",
-              received_at: new Date().toISOString(),
-              body: "Your code is 12345."
+              from: "example@test.com",
+              subject: "Sample Email",
+              received_at: new Date().toISOString()
             }
           ]
         }
@@ -122,7 +121,7 @@ router.get("/tempmail", async (req, res) => {
 
 // GET /email-checker - Email Validation API
 // Example Request: { "email": "test@example.com" }
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "email": "test@example.com", "valid": true, "disposable": false, "domain": "example.com", "reason": "" } }
+// Example Response: { "status": true, "creator": "REST API Website", "result": { "email": "test@example.com", "valid": true, "disposable": false, "domain": "example.com" } }
 router.get("/email-checker", async (req, res) => {
   try {
     const { email } = req.query;
@@ -141,8 +140,7 @@ router.get("/email-checker", async (req, res) => {
         email: email,
         valid: true,
         disposable: false,
-        domain: email.split("@")[1],
-        reason: ""
+        domain: email.split("@")[1]
       }
     };
 
@@ -157,8 +155,8 @@ router.get("/email-checker", async (req, res) => {
 });
 
 // GET /text-to-speech - Text to Speech API
-// Example Request: { "text": "Hello world, this is a test.", "lang": "en" }
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "text": "Hello world, this is a test.", "language": "en", "audio_url": "https://api.example.com/tts/audio.mp3" } }
+// Example Request: { "text": "Hello world", "lang": "en" }
+// Example Response: { "status": true, "creator": "REST API Website", "result": { "text": "Hello world", "language": "en", "audio_url": "https://example.com/tts-audio.mp3" } }
 router.get("/text-to-speech", async (req, res) => {
   try {
     const { text, lang = "en" } = req.query;
@@ -176,7 +174,7 @@ router.get("/text-to-speech", async (req, res) => {
       result: {
         text: text,
         language: lang,
-        audio_url: "https://api.example.com/tts/audio.mp3"
+        audio_url: "https://example.com/tts-audio.mp3"
       }
     };
 
@@ -192,7 +190,7 @@ router.get("/text-to-speech", async (req, res) => {
 
 // GET /earthquake-info - Earthquake Information API
 // Example Request: {}
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "latest_earthquake": { "magnitude": "6.5", "location": "Offshore Northern California", "depth": "10 km", "time": "2025-07-22T08:30:00.000Z", "tsunami_warning": false } } }
+// Example Response: { "status": true, "creator": "REST API Website", "result": { "latest_earthquake": { "magnitude": "5.2", "location": "Sample Location", "depth": "10 km", "time": "2025-07-22T10:00:00.000Z" } } }
 router.get("/earthquake-info", async (req, res) => {
   try {
     const responseData = {
@@ -200,11 +198,10 @@ router.get("/earthquake-info", async (req, res) => {
       creator: "REST API Website",
       result: {
         latest_earthquake: {
-          magnitude: "6.5",
-          location: "Offshore Northern California",
+          magnitude: "5.2",
+          location: "Sample Location",
           depth: "10 km",
-          time: new Date().toISOString(),
-          tsunami_warning: false
+          time: new Date().toISOString()
         }
       }
     };
