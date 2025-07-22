@@ -150,13 +150,6 @@ router.get("/textoimage", async (req, res) => {
 });
 
 router.description = "Artificial Intelligence related APIs";
-router.endpoints = [
-  { path: "/hydromind", method: "GET", params: ["text", "model"] },
-  { path: "/ai-img", method: "GET", params: ["prompt"] },
-  { path: "/luminai", method: "GET", params: ["text"] },
-  { path: "/openai", method: "GET", params: ["text", "model"] },
-  { path: "/textoimage", method: "GET", params: ["text"] }
-];
 
 module.exports = router;
 
