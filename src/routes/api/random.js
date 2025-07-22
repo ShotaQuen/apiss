@@ -2,8 +2,6 @@ const express = require("express");
 const router = express.Router();
 
 // GET /anime - Random Anime API
-// Example Request: {}
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "title": "Attack on Titan", "genre": "Action, Drama", "year": 2013, "rating": 9.0, "image": "https://example.com/aot.jpg" } }
 router.get("/anime", async (req, res) => {
   try {
     const animeList = [
@@ -49,8 +47,6 @@ router.get("/anime", async (req, res) => {
 });
 
 // GET /quotes - Random Quotes API
-// Example Request: {}
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "text": "The only way to do great work is to love what you do.", "author": "Steve Jobs", "category": "Motivation" } }
 router.get("/quotes", async (req, res) => {
   try {
     const quotes = [
@@ -90,8 +86,6 @@ router.get("/quotes", async (req, res) => {
 });
 
 // GET /blue-archive - Random Blue Archive Character API
-// Example Request: {}
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "name": "Shiroko", "school": "Abydos High School", "weapon": "Assault Rifle", "rarity": 3, "image": "https://example.com/shiroko.jpg" } }
 router.get("/blue-archive", async (req, res) => {
   try {
     const characters = [
@@ -137,8 +131,6 @@ router.get("/blue-archive", async (req, res) => {
 });
 
 // GET /waifu - Random Waifu API
-// Example Request: {}
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "name": "Rem", "anime": "Re:Zero", "image": "https://example.com/rem.jpg", "description": "Blue-haired maid from Re:Zero" } }
 router.get("/waifu", async (req, res) => {
   try {
     const waifus = [

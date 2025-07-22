@@ -3,8 +3,6 @@ const axios = require("axios");
 const router = express.Router();
 
 // GET /mobile-legends - Mobile Legends Profile API
-// Example Request: { "id": "12345678", "zone": "1234" }
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "player_id": "12345678", "zone": "1234", "username": "SamplePlayer", "level": 45, "rank": "Epic III", "total_matches": 1250, "win_rate": "65.2%", "favorite_hero": "Layla" } }
 router.get("/mobile-legends", async (req, res) => {
   try {
     const { id, zone } = req.query;
@@ -42,8 +40,6 @@ router.get("/mobile-legends", async (req, res) => {
 });
 
 // GET /genshin-impact - Genshin Impact Profile API
-// Example Request: { "uid": "123456789" }
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "uid": "123456789", "nickname": "Traveler", "adventure_rank": 55, "world_level": 8, "abyss_floor": "12-3", "characters_count": 25, "achievements": 450, "signature": "Exploring Teyvat!" } }
 router.get("/genshin-impact", async (req, res) => {
   try {
     const { uid } = req.query;
@@ -81,8 +77,6 @@ router.get("/genshin-impact", async (req, res) => {
 });
 
 // GET /free-fire - Free Fire Profile API
-// Example Request: { "uid": "1234567890" }
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "uid": "1234567890", "nickname": "FirePlayer", "level": 60, "rank": "Heroic", "total_matches": 2500, "win_rate": "58.4%", "k_d_ratio": "2.1", "guild": "SampleGuild" } }
 router.get("/free-fire", async (req, res) => {
   try {
     const { uid } = req.query;
@@ -120,8 +114,6 @@ router.get("/free-fire", async (req, res) => {
 });
 
 // GET /npm - NPM Package Information API
-// Example Request: { "package": "express" }
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "name": "express", "version": "4.18.2", "description": "Fast, unopinionated, minimalist web framework for node.", "author": "TJ Holowaychuk <tj@vision-media.ca>", "license": "MIT", "weekly_downloads": "30,000,000", "last_publish": "2023-09-18T00:00:00.000Z", "repository": "https://github.com/expressjs/express", "homepage": "https://expressjs.com/" } }
 router.get("/npm", async (req, res) => {
   try {
     const { package: packageName } = req.query;

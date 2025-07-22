@@ -3,8 +3,6 @@ const router = express.Router();
 const db = require("../models/database");
 
 // GET /users - Get all users
-// Example Request: {}
-// Example Response: [ { "id": 1, "username": "john_doe", "email": "john@example.com" }, { "id": 2, "username": "jane_doe", "email": "jane@example.com" } ]
 router.get("/users", async (req, res) => {
   try {
     const users = await db.getAllUsers();
@@ -19,8 +17,6 @@ router.get("/users", async (req, res) => {
 });
 
 // POST /users - Create new user
-// Example Request: { "username": "new_user", "email": "new@example.com" }
-// Example Response: { "id": 3, "username": "new_user", "email": "new@example.com" }
 router.post("/users", async (req, res) => {
   try {
     const { username, email } = req.body;
@@ -51,8 +47,6 @@ router.post("/users", async (req, res) => {
 });
 
 // GET /users/:id - Get user by ID
-// Example Request: { "id": 1 }
-// Example Response: { "id": 1, "username": "john_doe", "email": "john@example.com" }
 router.get("/users/:id", async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
@@ -76,8 +70,6 @@ router.get("/users/:id", async (req, res) => {
 });
 
 // PUT /users/:id - Update user
-// Example Request: { "id": 1, "username": "updated_john", "email": "updated_john@example.com" }
-// Example Response: { "id": 1, "username": "updated_john", "email": "updated_john@example.com" }
 router.put("/users/:id", async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
@@ -115,8 +107,6 @@ router.put("/users/:id", async (req, res) => {
 });
 
 // DELETE /users/:id - Delete user
-// Example Request: { "id": 1 }
-// Example Response: (No Content - 204 Status)
 router.delete("/users/:id", async (req, res) => {
   try {
     const userId = parseInt(req.params.id);

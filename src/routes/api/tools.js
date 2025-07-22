@@ -3,8 +3,6 @@ const axios = require("axios");
 const router = express.Router();
 
 // GET /screenshot - Website Screenshot API
-// Example Request: { "url": "https://www.google.com" }
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "url": "https://www.google.com", "screenshot_url": "https://example.com/screenshot.png", "timestamp": "2025-07-22T10:00:00.000Z" } }
 router.get("/screenshot", async (req, res) => {
   try {
     const { url } = req.query;
@@ -37,8 +35,6 @@ router.get("/screenshot", async (req, res) => {
 });
 
 // GET /tinyurl - URL Shortener API
-// Example Request: { "url": "https://www.longurl.com/very/long/path" }
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "original_url": "https://www.longurl.com/very/long/path", "short_url": "https://tinyurl.com/sample123", "created_at": "2025-07-22T10:00:00.000Z" } }
 router.get("/tinyurl", async (req, res) => {
   try {
     const { url } = req.query;
@@ -71,8 +67,6 @@ router.get("/tinyurl", async (req, res) => {
 });
 
 // GET /tempmail - Temporary Email API
-// Example Request: { "action": "generate" }
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "email": "temp123@tempmail.com", "expires_at": "2025-07-23T10:00:00.000Z" } }
 router.get("/tempmail", async (req, res) => {
   try {
     const { action = "generate" } = req.query;
@@ -120,8 +114,6 @@ router.get("/tempmail", async (req, res) => {
 });
 
 // GET /email-checker - Email Validation API
-// Example Request: { "email": "test@example.com" }
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "email": "test@example.com", "valid": true, "disposable": false, "domain": "example.com" } }
 router.get("/email-checker", async (req, res) => {
   try {
     const { email } = req.query;
@@ -155,8 +147,6 @@ router.get("/email-checker", async (req, res) => {
 });
 
 // GET /text-to-speech - Text to Speech API
-// Example Request: { "text": "Hello world", "lang": "en" }
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "text": "Hello world", "language": "en", "audio_url": "https://example.com/tts-audio.mp3" } }
 router.get("/text-to-speech", async (req, res) => {
   try {
     const { text, lang = "en" } = req.query;
@@ -189,8 +179,6 @@ router.get("/text-to-speech", async (req, res) => {
 });
 
 // GET /earthquake-info - Earthquake Information API
-// Example Request: {}
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "latest_earthquake": { "magnitude": "5.2", "location": "Sample Location", "depth": "10 km", "time": "2025-07-22T10:00:00.000Z" } } }
 router.get("/earthquake-info", async (req, res) => {
   try {
     const responseData = {
@@ -217,8 +205,6 @@ router.get("/earthquake-info", async (req, res) => {
 });
 
 // GET /vcc-generator - Virtual Credit Card Generator API
-// Example Request: { "type": "visa" }
-// Example Response: { "status": true, "creator": "REST API Website", "result": { "card_number": "4111 1111 1111 1111", "card_type": "visa", "expiry": "12/25", "cvv": "123", "note": "This is a sample card for testing purposes only" } }
 router.get("/vcc-generator", async (req, res) => {
   try {
     const { type = "visa" } = req.query;
