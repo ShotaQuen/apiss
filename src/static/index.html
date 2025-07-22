@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REST API Documentation - Modern & Professional</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-code"></i>
+                <span>REST API</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#docs" class="nav-link">Documentation</a>
+                <a href="#test" class="nav-link">API Test</a>
+            </div>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="mobile-menu-toggle" id="mobileToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-rocket"></i>
+                    <span>Modern REST API</span>
+                </div>
+                <h1 class="hero-title">
+                    Powerful REST API
+                    <span class="gradient-text">Documentation</span>
+                </h1>
+                <p class="hero-description">
+                    Akses lebih dari 35 endpoint API yang powerful untuk AI, download media, tools utilitas, 
+                    pencarian konten, dan banyak lagi. Semua dalam satu platform yang modern dan mudah digunakan.
+                </p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" onclick="scrollToSection('docs')">
+                        <i class="fas fa-book"></i>
+                        Explore APIs
+                    </button>
+                    <button class="btn btn-secondary" onclick="scrollToSection('test')">
+                        <i class="fas fa-play"></i>
+                        Try API
+                    </button>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <div class="stat-number">35+</div>
+                        <div class="stat-label">API Endpoints</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">6</div>
+                        <div class="stat-label">Categories</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">99.9%</div>
+                        <div class="stat-label">Uptime</div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="code-preview">
+                    <div class="code-header">
+                        <div class="code-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                        <span class="code-title">API Response</span>
+                    </div>
+                    <div class="code-content">
+                        <pre><code>{
+  "status": true,
+  "creator": "REST API Website",
+  "result": {
+    "message": "Welcome to our API!",
+    "endpoints": 35,
+    "categories": ["AI", "Download", "Tools"]
+  }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">API Categories</h2>
+                <p class="section-description">
+                    Jelajahi berbagai kategori API yang tersedia untuk kebutuhan development Anda
+                </p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card" data-category="ai">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3 class="feature-title">Artificial Intelligence</h3>
+                    <p class="feature-description">
+                        API untuk chat AI, image generation, dan berbagai layanan AI lainnya
+                    </p>
+                    <div class="feature-endpoints">5 endpoints</div>
+                </div>
+                <div class="feature-card" data-category="download">
+                    <div class="feature-icon">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <h3 class="feature-title">Media Download</h3>
+                    <p class="feature-description">
+                        Download video dari YouTube, TikTok, Facebook, dan platform lainnya
+                    </p>
+                    <div class="feature-endpoints">6 endpoints</div>
+                </div>
+                <div class="feature-card" data-category="tools">
+                    <div class="feature-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <h3 class="feature-title">Utility Tools</h3>
+                    <p class="feature-description">
+                        Screenshot website, URL shortener, email tools, dan utilitas lainnya
+                    </p>
+                    <div class="feature-endpoints">7 endpoints</div>
+                </div>
+                <div class="feature-card" data-category="search">
+                    <div class="feature-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3 class="feature-title">Search Engines</h3>
+                    <p class="feature-description">
+                        Cari konten di YouTube, TikTok, Pinterest, dan platform lainnya
+                    </p>
+                    <div class="feature-endpoints">5 endpoints</div>
+                </div>
+                <div class="feature-card" data-category="random">
+                    <div class="feature-icon">
+                        <i class="fas fa-random"></i>
+                    </div>
+                    <h3 class="feature-title">Random Content</h3>
+                    <p class="feature-description">
+                        Generator konten random seperti anime, quotes, dan karakter
+                    </p>
+                    <div class="feature-endpoints">4 endpoints</div>
+                </div>
+                <div class="feature-card" data-category="stalk">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-secret"></i>
+                    </div>
+                    <h3 class="feature-title">Account Info</h3>
+                    <p class="feature-description">
+                        Informasi akun game dan profil dari berbagai platform
+                    </p>
+                    <div class="feature-endpoints">4 endpoints</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Documentation Section -->
+    <section id="docs" class="documentation">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">API Documentation</h2>
+                <p class="section-description">
+                    Dokumentasi lengkap untuk semua endpoint API yang tersedia
+                </p>
+            </div>
+            <div class="docs-container">
+                <div class="docs-sidebar">
+                    <div class="docs-search">
+                        <input type="text" placeholder="Search endpoints..." id="docsSearch">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="docs-categories" id="docsCategories">
+                        <!-- Categories will be loaded here -->
+                    </div>
+                </div>
+                <div class="docs-content">
+                    <div class="docs-welcome">
+                        <h3>Welcome to API Documentation</h3>
+                        <p>Pilih kategori atau endpoint dari sidebar untuk melihat dokumentasi detail.</p>
+                    </div>
+                    <div class="endpoint-details" id="endpointDetails" style="display: none;">
+                        <!-- Endpoint details will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- API Testing Section -->
+    <section id="test" class="api-testing">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">API Testing Interface</h2>
+                <p class="section-description">
+                    Test API endpoints secara langsung dari browser Anda
+                </p>
+            </div>
+            <div class="testing-container">
+                <div class="testing-form">
+                    <div class="form-group">
+                        <label for="apiSelect">Select API Endpoint</label>
+                        <select id="apiSelect" class="form-control">
+                            <option value="">Choose an endpoint...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="methodSelect">HTTP Method</label>
+                        <select id="methodSelect" class="form-control">
+                            <option value="GET">GET</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Parameters</label>
+                        <div id="parametersContainer">
+                            <!-- Parameters will be loaded here -->
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-primary" id="sendRequest">
+                            <i class="fas fa-paper-plane"></i>
+                            Send Request
+                        </button>
+                        <button class="btn btn-secondary" id="clearForm">
+                            <i class="fas fa-trash"></i>
+                            Clear
+                        </button>
+                    </div>
+                </div>
+                <div class="testing-response">
+                    <div class="response-header">
+                        <h4>Response</h4>
+                        <div class="response-status" id="responseStatus"></div>
+                    </div>
+                    <div class="response-content">
+                        <pre id="responseContent">No request sent yet...</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <i class="fas fa-code"></i>
+                    <span>REST API Documentation</span>
+                </div>
+                <div class="footer-links">
+                    <a href="#home">Home</a>
+                    <a href="#features">Features</a>
+                    <a href="#docs">Documentation</a>
+                    <a href="#test">API Test</a>
+                </div>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 REST API Documentation. Built with modern web technologies.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Loading...</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
