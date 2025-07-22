@@ -95,75 +95,51 @@
     <!-- Features Section -->
     <section id="features" class="features">
         <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">API Categories</h2>
-                <p class="section-description">
-                    Jelajahi berbagai kategori API yang tersedia untuk kebutuhan development Anda
-                </p>
-            </div>
-            <div class="features-grid">
-                <div class="feature-card" data-category="ai">
-                    <div class="feature-icon">
-                        <i class="fas fa-brain"></i>
-                    </div>
-                    <h3 class="feature-title">Artificial Intelligence</h3>
-                    <p class="feature-description">
-                        API untuk chat AI, image generation, dan berbagai layanan AI lainnya
-                    </p>
-                    <div class="feature-endpoints">5 endpoints</div>
-                </div>
-                <div class="feature-card" data-category="download">
-                    <div class="feature-icon">
-                        <i class="fas fa-download"></i>
-                    </div>
-                    <h3 class="feature-title">Media Download</h3>
-                    <p class="feature-description">
-                        Download video dari YouTube, TikTok, Facebook, dan platform lainnya
-                    </p>
-                    <div class="feature-endpoints">6 endpoints</div>
-                </div>
-                <div class="feature-card" data-category="tools">
-                    <div class="feature-icon">
-                        <i class="fas fa-tools"></i>
-                    </div>
-                    <h3 class="feature-title">Utility Tools</h3>
-                    <p class="feature-description">
-                        Screenshot website, URL shortener, email tools, dan utilitas lainnya
-                    </p>
-                    <div class="feature-endpoints">7 endpoints</div>
-                </div>
-                <div class="feature-card" data-category="search">
-                    <div class="feature-icon">
-                        <i class="fas fa-search"></i>
-                    </div>
-                    <h3 class="feature-title">Search Engines</h3>
-                    <p class="feature-description">
-                        Cari konten di YouTube, TikTok, Pinterest, dan platform lainnya
-                    </p>
-                    <div class="feature-endpoints">5 endpoints</div>
-                </div>
-                <div class="feature-card" data-category="random">
-                    <div class="feature-icon">
-                        <i class="fas fa-random"></i>
-                    </div>
-                    <h3 class="feature-title">Random Content</h3>
-                    <p class="feature-description">
-                        Generator konten random seperti anime, quotes, dan karakter
-                    </p>
-                    <div class="feature-endpoints">4 endpoints</div>
-                </div>
-                <div class="feature-card" data-category="stalk">
-                    <div class="feature-icon">
-                        <i class="fas fa-user-secret"></i>
-                    </div>
-                    <h3 class="feature-title">Account Info</h3>
-                    <p class="feature-description">
-                        Informasi akun game dan profil dari berbagai platform
-                    </p>
-                    <div class="feature-endpoints">4 endpoints</div>
-                </div>
-            </div>
-        </div>
+  <div class="section-header">
+    <h2 class="section-title">API Categories</h2>
+    <p class="section-description">
+      Jelajahi berbagai kategori API yang tersedia untuk kebutuhan development Anda
+    </p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card" data-category="ai">
+      <div class="feature-icon"><i class="fas fa-brain"></i></div>
+      <h3 class="feature-title">Artificial Intelligence</h3>
+      <p class="feature-description">API untuk chat AI, image generation, dan berbagai layanan AI lainnya</p>
+      <div class="feature-endpoints">0 endpoints</div>
+    </div>
+    <div class="feature-card" data-category="download">
+      <div class="feature-icon"><i class="fas fa-download"></i></div>
+      <h3 class="feature-title">Media Download</h3>
+      <p class="feature-description">Download video dari YouTube, TikTok, Facebook, dan platform lainnya</p>
+      <div class="feature-endpoints">0 endpoints</div>
+    </div>
+    <div class="feature-card" data-category="tools">
+      <div class="feature-icon"><i class="fas fa-tools"></i></div>
+      <h3 class="feature-title">Utility Tools</h3>
+      <p class="feature-description">Screenshot website, URL shortener, email tools, dan utilitas lainnya</p>
+      <div class="feature-endpoints">0 endpoints</div>
+    </div>
+    <div class="feature-card" data-category="search">
+      <div class="feature-icon"><i class="fas fa-search"></i></div>
+      <h3 class="feature-title">Search Engines</h3>
+      <p class="feature-description">Cari konten di YouTube, TikTok, Pinterest, dan platform lainnya</p>
+      <div class="feature-endpoints">0 endpoints</div>
+    </div>
+    <div class="feature-card" data-category="random">
+      <div class="feature-icon"><i class="fas fa-random"></i></div>
+      <h3 class="feature-title">Random Content</h3>
+      <p class="feature-description">Generator konten random seperti anime, quotes, dan karakter</p>
+      <div class="feature-endpoints">0 endpoints</div>
+    </div>
+    <div class="feature-card" data-category="stalk">
+      <div class="feature-icon"><i class="fas fa-user-secret"></i></div>
+      <h3 class="feature-title">Account Info</h3>
+      <p class="feature-description">Informasi akun game dan profil dari berbagai platform</p>
+      <div class="feature-endpoints">0 endpoints</div>
+    </div>
+  </div>
+</div>
     </section>
 
     <!-- Documentation Section -->
@@ -355,6 +331,29 @@
   }
 
   updateStats();
+</script>
+<script>
+    async function updateEndpointCounts() {
+        try {
+            const res = await fetch('https://berak-new.vercel.app/api');
+            const data = await res.json();
+            const categories = data.categories || {};
+            
+            document.querySelectorAll('.feature-card').forEach(card => {
+                const key = card.dataset.category;
+                const endpointCount = categories?.[capitalize(key)]?.endpoints?.length || 0;
+                card.querySelector('.feature-endpoints').textContent = `${endpointCount} endpoints`;
+            });
+        } catch (err) {
+            console.error('Gagal mengambil data API:', err);
+        }
+    }
+    
+    function capitalize(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+    
+    updateEndpointCounts();
 </script>
 </body>
 </html>
