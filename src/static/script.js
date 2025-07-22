@@ -393,13 +393,7 @@ async function sendApiRequest() {
         // Update response display
         responseStatus.textContent = response.ok ? `${response.status} OK` : `${response.status} Error`;
         responseStatus.className = `response-status ${response.ok ? 'success' : 'error'}`;
-
-const displayData = {
-  creator: "REST API Website",
-  ...data
-};
-
-responseContent.textContent = JSON.stringify(displayData, null, 2);
+        responseContent.textContent = JSON.stringify(data, null, 2);
         
     } catch (error) {
         console.error('Error sending API request:', error);
