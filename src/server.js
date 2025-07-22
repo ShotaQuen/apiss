@@ -18,6 +18,32 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Serve static files
 app.use(express.static(path.join(__dirname, "static")));
 
+// Function to extract query parameters from route handler code
+const extractQueryParams = (handlerCode) => {
+  const params = new Set();
+  
+  // Pattern 1: const { param1, param2 } = req.query;
+  const destructuringPattern = /const\s*{\s*([^}]+)\s*}\s*=\s*req\.query/g;
+  let match;
+  while ((match = destructuringPattern.exec(handlerCode)) !== null) {
+    const paramString = match[1];
+    const paramNames = paramString.split(',').map(p => {
+      // Handle default values like "param = defaultValue"
+      const cleanParam = p.split('=')[0].trim();
+      return cleanParam;
+    });
+    paramNames.forEach(param => params.add(param));
+  }
+  
+  // Pattern 2: req.query.paramName
+  const directAccessPattern = /req\.query\.([a-zA-Z_$][a-zA-Z0-9_$]*)/g;
+  while ((match = directAccessPattern.exec(handlerCode)) !== null) {
+    params.add(match[1]);
+  }
+  
+  return Array.from(params);
+};
+
 // Function to dynamically load routes and collect endpoint info
 const loadRoutes = () => {
   const routesDir = path.join(__dirname, "routes");
@@ -48,18 +74,25 @@ const loadRoutes = () => {
       methods.forEach(method => {
         const fullPath = `/api${routePath}`;
         const pathParams = extractPathParams(routePath);
-        // For query params, we'll need to manually inspect the handler or assume based on common patterns
-        // For now, we'll just include path params and rely on the previous explicit params for query if available
+        
+        // For user routes, we'll manually define common params since it's a special case
+        let queryParams = [];
+        if (method === 'post' && routePath === '/users') {
+          queryParams = ['username', 'email'];
+        } else if (method === 'put' && routePath === '/users/:id') {
+          queryParams = ['username', 'email'];
+        }
+        
         userEndpoints.push({
           path: fullPath,
           method: method.toUpperCase(),
-          params: pathParams // Simplified: only path params are auto-detected
+          params: [...pathParams, ...queryParams]
         });
       });
     }
   });
   categories.User = {
-    description: "User management APIs", // Hardcoded description for user route
+    description: "User management APIs",
     endpoints: userEndpoints
   };
   totalEndpoints += userEndpoints.length;
@@ -73,6 +106,9 @@ const loadRoutes = () => {
     const urlPrefix = `/api/${routeName}`;
     app.use(urlPrefix, routeModule);
 
+    // Read the file content to analyze query parameters
+    const fileContent = fs.readFileSync(path.join(apiRoutesDir, file), 'utf8');
+
     const moduleEndpoints = [];
     routeModule.stack.forEach(layer => {
       if (layer.route) {
@@ -81,17 +117,31 @@ const loadRoutes = () => {
         methods.forEach(method => {
           const fullPath = `${urlPrefix}${routePath}`;
           const pathParams = extractPathParams(routePath);
+          
+          // Extract the handler function code for this specific route
+          const routeHandlerPattern = new RegExp(
+            `router\\.${method}\\s*\\(\\s*["'\`]${routePath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}["'\`]\\s*,\\s*async\\s*\\([^)]*\\)\\s*=>\\s*{([\\s\\S]*?)}\\s*\\);`,
+            'g'
+          );
+          
+          let queryParams = [];
+          const handlerMatch = routeHandlerPattern.exec(fileContent);
+          if (handlerMatch) {
+            const handlerCode = handlerMatch[1];
+            queryParams = extractQueryParams(handlerCode);
+          }
+          
           moduleEndpoints.push({
             path: fullPath,
             method: method.toUpperCase(),
-            params: pathParams // Simplified: only path params are auto-detected
+            params: [...pathParams, ...queryParams]
           });
         });
       }
     });
 
     categories[routeName.charAt(0).toUpperCase() + routeName.slice(1)] = {
-      description: routeModule.description || `APIs for ${routeName}`, // Use existing description or default
+      description: routeModule.description || `APIs for ${routeName}`,
       endpoints: moduleEndpoints
     };
     totalEndpoints += moduleEndpoints.length;
@@ -130,5 +180,4 @@ db.initialize()
   });
 
 module.exports = app;
-
 
