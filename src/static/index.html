@@ -85,16 +85,8 @@
                         <span class="code-title">API Response</span>
                     </div>
                     <div class="code-content">
-                        <pre><code>{
-  "status": true,
-  "creator": "REST API Website",
-  "result": {
-    "message": "Welcome to our API!",
-    "endpoints": 35,
-    "categories": ["AI", "Download", "Tools"]
-  }
-}</code></pre>
-                    </div>
+  <pre><code id="json-output">Loading...</code></pre>
+</div>
                 </div>
             </div>
         </div>
@@ -294,6 +286,36 @@
     </div>
 
     <script src="script.js"></script>
+    <script>
+  async function fetchAndFormatAPI() {
+    try {
+      const res = await fetch('https://berak-new.vercel.app/api');
+      const data = await res.json();
+
+      // Ambil nama kategori saja (tanpa deskripsi dan endpoints)
+      const categoryNames = Object.keys(data.categories || {});
+
+      // Buat struktur baru
+      const result = {
+        status: data.status,
+        creator: data.creator,
+        result: {
+          message: "Welcome to our API!",
+          endpoints: data.total_endpoints,
+          categories: categoryNames
+        }
+      };
+
+      // Tampilkan ke dalam <code>
+      document.getElementById('json-output').textContent = JSON.stringify(result, null, 2);
+    } catch (err) {
+      document.getElementById('json-output').textContent = 'Gagal mengambil data API';
+      console.error(err);
+    }
+  }
+
+  fetchAndFormatAPI();
+</script>
 </body>
 </html>
 
