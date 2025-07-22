@@ -8,7 +8,7 @@ router.get("/users", async (req, res) => {
     const users = await db.getAllUsers();
     res.json(users);
   } catch (error) {
-    console.error("Error getting users:", error);
+    console.error("Error gettivg users:", error);
     res.status(500).json({
       status: false,
       error: "Failed to retrieve users"
