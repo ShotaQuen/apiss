@@ -86,7 +86,9 @@ const loadRoutes = () => {
         userEndpoints.push({
           path: fullPath,
           method: method.toUpperCase(),
-          params: [...pathParams, ...queryParams]
+          params: [...pathParams, ...queryParams],
+          exampleRequest: {},
+          exampleResponse: {}
         });
       });
     }
@@ -106,8 +108,8 @@ const loadRoutes = () => {
     const urlPrefix = `/api/${routeName}`;
     app.use(urlPrefix, routeModule);
 
-    // Read the file content to analyze query parameters
-    const fileContent = fs.readFileSync(path.join(apiRoutesDir, file), 'utf8');
+    // Read the file content to analyze query parameters and examples
+    const fileContent = fs.readFileSync(path.join(apiRoutesDir, file), "utf8");
 
     const moduleEndpoints = [];
     routeModule.stack.forEach(layer => {
@@ -118,23 +120,38 @@ const loadRoutes = () => {
           const fullPath = `${urlPrefix}${routePath}`;
           const pathParams = extractPathParams(routePath);
           
-          // Extract the handler function code for this specific route
-          const routeHandlerPattern = new RegExp(
-            `router\\.${method}\\s*\\(\\s*["'\`]${routePath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}["'\`]\\s*,\\s*async\\s*\\([^)]*\\)\\s*=>\\s*{([\\s\\S]*?)}\\s*\\);`,
-            'g'
-          );
+          // Extract query parameters from the entire file content
+          const queryParams = extractQueryParams(fileContent);
           
-          let queryParams = [];
-          const handlerMatch = routeHandlerPattern.exec(fileContent);
-          if (handlerMatch) {
-            const handlerCode = handlerMatch[1];
-            queryParams = extractQueryParams(handlerCode);
+          // Try to extract example request and response from comments
+          let exampleRequest = {};
+          let exampleResponse = {};
+          
+          // Look for example comments near the route definition
+          const routeIndex = fileContent.indexOf(`router.${method}("${routePath}"`);
+          if (routeIndex !== -1) {
+            const beforeRoute = fileContent.substring(Math.max(0, routeIndex - 500), routeIndex);
+            const reqMatch = beforeRoute.match(/\/\/ Example Request: ([^\n]+)/);
+            const resMatch = beforeRoute.match(/\/\/ Example Response: ([^\n]+)/);
+            
+            if (reqMatch) {
+              try {
+                exampleRequest = JSON.parse(reqMatch[1].trim());
+              } catch (e) { /* ignore */ }
+            }
+            if (resMatch) {
+              try {
+                exampleResponse = JSON.parse(resMatch[1].trim());
+              } catch (e) { /* ignore */ }
+            }
           }
           
           moduleEndpoints.push({
             path: fullPath,
             method: method.toUpperCase(),
-            params: [...pathParams, ...queryParams]
+            params: [...pathParams, ...queryParams],
+            exampleRequest: exampleRequest,
+            exampleResponse: exampleResponse
           });
         });
       }

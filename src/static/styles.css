@@ -740,7 +740,8 @@ body {
     border-radius: var(--radius-md);
     padding: 1rem;
     min-height: 300px;
-    overflow-x: auto;
+    max-height: 400px; /* Added max-height */
+    overflow-y: auto; /* Added overflow-y */
 }
 
 .response-content pre {
@@ -1019,4 +1020,5 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--text-muted);
 }
+
 
