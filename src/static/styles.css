@@ -740,9 +740,6 @@ body {
     border-radius: var(--radius-md);
     padding: 1rem;
     min-height: 300px;
-    max-height: 400px;            /* scroll ke bawah jika tinggi berlebih */
-    overflow: auto;               /* scroll ke bawah & samping */
-    box-sizing: border-box;
 }
 
 .response-content pre {
@@ -750,11 +747,9 @@ body {
     font-size: 0.875rem;
     line-height: 1.6;
     color: var(--text-primary);
-    white-space: pre;             /* jaga format JSON */
-    overflow: auto;               /* scroll horizontal & vertical */
-    display: block;
-    max-width: 100%;
-    box-sizing: border-box;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-x: auto;
 }
 
 /* Footer */
