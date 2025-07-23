@@ -740,8 +740,8 @@ body {
     border-radius: var(--radius-md);
     padding: 1rem;
     min-height: 300px;
-    overflow-x: auto; /* ⬅️ penting */
-    max-width: 100%;  /* ⬅️ mencegah lebar berlebihan */
+    max-height: 400px;            /* scroll ke bawah jika tinggi berlebih */
+    overflow: auto;               /* scroll ke bawah & samping */
     box-sizing: border-box;
 }
 
@@ -750,8 +750,8 @@ body {
     font-size: 0.875rem;
     line-height: 1.6;
     color: var(--text-primary);
-    white-space: pre; /* ⬅️ jaga struktur JSON */
-    overflow-x: auto;
+    white-space: pre;             /* jaga format JSON */
+    overflow: auto;               /* scroll horizontal & vertical */
     display: block;
     max-width: 100%;
     box-sizing: border-box;
