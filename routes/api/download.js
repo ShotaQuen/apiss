@@ -16,13 +16,6 @@ router.get("/ytmp3", async (req, res) => {
 
     const result = await ytmp3(url);
 
-    if (!result.success) {
-      return res.status(500).json({
-        status: false,
-        error: result.error
-      });
-    }
-
     res.json({
       status: true,
       creator: "BerakNews",
