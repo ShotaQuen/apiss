@@ -645,7 +645,8 @@ body {
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
     margin-top: 2rem;
-    overflow-x: auto; /* Added overflow-y */
+    overflow-x: auto;
+    overflow-y: auto;
 }
 
 .testing-form,
@@ -654,7 +655,8 @@ body {
     border: 1px solid var(--border-color);
     border-radius: var(--radius-xl);
     padding: 2rem;
-    overflow-x: auto; /* Added overflow-y */
+    overflow-x: auto;
+    overflow-y: auto;
 }
 
 .form-group {
@@ -724,7 +726,7 @@ body {
     border-radius: var(--radius-sm);
     font-size: 0.75rem;
     font-weight: 600;
-    overflow-x: auto; /* Added overflow-y */
+    overflow-x: auto;
 }
 
 .response-status.success {
@@ -744,7 +746,8 @@ body {
     padding: 1rem;
     min-height: 300px;
     max-height: 400px; /* Added max-height */
-    overflow-x: auto; /* Added overflow-y */
+    overflow-x: auto;
+    overflow-y: auto;
 }
 
 .response-content pre {
@@ -754,7 +757,8 @@ body {
     color: var(--text-primary);
     white-space: pre-wrap;
     word-wrap: break-word;
-    overflow-x: auto; /* Added overflow-y */
+    overflow-x: auto;
+    overflow-y: auto;
 }
 
 /* Footer */
