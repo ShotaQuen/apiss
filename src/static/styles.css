@@ -645,6 +645,7 @@ body {
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
     margin-top: 2rem;
+    overflow-x: auto; /* Added overflow-y */
 }
 
 .testing-form,
@@ -653,6 +654,7 @@ body {
     border: 1px solid var(--border-color);
     border-radius: var(--radius-xl);
     padding: 2rem;
+    overflow-x: auto; /* Added overflow-y */
 }
 
 .form-group {
@@ -722,6 +724,7 @@ body {
     border-radius: var(--radius-sm);
     font-size: 0.75rem;
     font-weight: 600;
+    overflow-x: auto; /* Added overflow-y */
 }
 
 .response-status.success {
