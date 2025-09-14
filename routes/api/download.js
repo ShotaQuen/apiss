@@ -34,7 +34,7 @@ router.get("/ytmp3", async (req, res) => {
     console.error(error);
     res.status(500).json({
       status: false,
-      error: error.message
+      error: error
     });
   }
 });
