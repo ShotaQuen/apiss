@@ -90,8 +90,8 @@
   "creator": "REST API Website",
   "result": {
     "message": "Welcome to our API!",
-    "endpoints": 35,
-    "categories": ["AI", "Download", "Tools"]
+    "endpoints": <pre id=endpoints-total>0</pre>,
+    "categories": <pre></pre>
   }
 }</code></pre>
                     </div>
@@ -294,6 +294,16 @@
     </div>
 
     <script src="script.js"></script>
+    <script>
+        fetch("/api")
+      .then(res => res.json())
+      .then(data => {
+        const endpoints-total = document.getElementById("endpoints-total");
+        const total_endpoints = data.total_endpoints
+
+        endpoints-total.textContent = total_endpoints
+      });
+    </script>
 </body>
 </html>
 

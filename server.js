@@ -105,9 +105,7 @@ const loadRoutes = () => {
           moduleEndpoints.push({
             path: fullPath,
             method: method.toUpperCase(),
-            params: [...pathParams, ...queryParams],
-            exampleRequest,
-            exampleResponse
+            params: [...pathParams, ...queryParams]
           });
         });
       }
