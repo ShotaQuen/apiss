@@ -1,7 +1,7 @@
 const express = require("express");
 const axios = require("axios");
 const router = express.Router();
-const { ytmp4, ytmp3 } = require('../../scrape/ytdl.js')
+const { ytmp4, ytmp3 } = require('../../scrape/download.js')
 
 router.get("/ytmp3", async (req, res) => {
   try {
@@ -15,6 +15,35 @@ router.get("/ytmp3", async (req, res) => {
     }
 
     const result = await ytmp3(url);
+
+    res.json({
+      status: true,
+      creator: "BerakNews",
+      result: {
+        result
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: false,
+      error: error
+    });
+  }
+});
+
+router.get("/ytmp4", async (req, res) => {
+  try {
+    const { url } = req.query;
+
+    if (!url) {
+      return res.status(400).json({
+        status: false,
+        error: "URL parameter is required"
+      });
+    }
+
+    const result = await ytmp4(url);
 
     res.json({
       status: true,
