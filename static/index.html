@@ -90,8 +90,8 @@
   "creator": "REST API Website",
   "result": {
     "message": "Welcome to our API!",
-    "endpoints": <p id=endpoints-total>0</p>,
-    "categories": <pre></pre>
+    "endpoints": <span id=endpoints-total>0</span>,
+    "categories": <span id="categories-list">[]</span>
   }
 }</code></pre>
                     </div>
@@ -295,13 +295,11 @@
 
     <script src="script.js"></script>
     <script>
-        fetch("/api")
+        fetch("https://berak-new-pjq3.vercel.app/api")
       .then(res => res.json())
       .then(data => {
-        const endpoints-total = document.getElementById("endpoints-total");
-        const total_endpoints = data.total_endpoints
-
-        endpoints-total.textContent = total_endpoints
+          
+        document.getElementById("endpoints-total").textContent = data.result.categories.length;
       });
     </script>
 </body>
