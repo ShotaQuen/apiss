@@ -299,7 +299,7 @@
       .then(res => res.json())
       .then(data => {
           
-        document.getElementById("endpoints-total").textContent = data.result.categories.length;
+        document.getElementById("endpoints-total").textContent = data.categories.length;
       });
     </script>
 </body>
