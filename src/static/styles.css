@@ -751,6 +751,7 @@ body {
     color: var(--text-primary);
     white-space: pre-wrap;
     word-wrap: break-word;
+    overflow-x: auto; /* Added overflow-y */
 }
 
 /* Footer */
