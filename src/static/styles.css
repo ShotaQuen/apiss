@@ -741,7 +741,7 @@ body {
     padding: 1rem;
     min-height: 300px;
     max-height: 400px; /* Added max-height */
-    overflow-y: auto; /* Added overflow-y */
+    overflow-x: auto; /* Added overflow-y */
 }
 
 .response-content pre {
