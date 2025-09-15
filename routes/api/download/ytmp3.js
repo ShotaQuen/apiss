@@ -1,6 +1,6 @@
-const { ytmp4 } = require('../../../scrape/download.js')
+const { ytmp3 } = require('../../../scrape/download.js')
 
-router.get("/ytmp4", async (req, res) => {
+router.get("/ytmp3", async (req, res) => {
   try {
     const { url } = req.query;
 
@@ -11,7 +11,7 @@ router.get("/ytmp4", async (req, res) => {
       });
     }
 
-    const result = await ytmp4(url);
+    const result = await ytmp3(url);
 
     res.json({
       status: true,

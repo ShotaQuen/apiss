@@ -42,8 +42,6 @@ async function ytmp3(url) {
     }
 
     return {
-      status: true,
-      source: "youtube",
       id: data.id,
       title: data.title,
       author: data.author,
@@ -73,8 +71,6 @@ async function ytmp4(url) {
     }
 
     return {
-      status: true,
-      source: "youtube",
       id: data.id,
       title: data.title,
       author: data.author,

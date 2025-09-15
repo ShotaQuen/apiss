@@ -115,7 +115,6 @@ const loadRoutes = () => {
   categories[categoryName.charAt(0).toUpperCase() + categoryName.slice(1)] = {
     description: `APIs for ${categoryName}`,
     endpoints: [],
-    example_response: routeModule.example_response || null
   };
 }
 
