@@ -3,15 +3,10 @@ const cors = require("cors");
 const path = require("path");
 const bodyParser = require("body-parser");
 const fs = require("fs");
-
-// Module
 require('./settings/module.js');
 const app = express();
 
-// Import database
 const db = require("./models/database");
-
-const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors()); 
