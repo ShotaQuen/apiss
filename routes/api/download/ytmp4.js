@@ -1,5 +1,4 @@
-const express = require("express");
-const router = express.Router();
+require('../../../settings/module.js')
 
 // Contoh response bawaan untuk dokumentasi
 router.example_response = "linkvideo";

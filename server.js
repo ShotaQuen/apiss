@@ -4,6 +4,10 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const fs = require("fs");
 
+// Module
+require('./settings/module.js');
+const app = express();
+
 // Import database
 const db = require("./models/database");
 
@@ -105,8 +109,8 @@ const loadRoutes = () => {
           moduleEndpoints.push({
             path: fullPath,
             method: method.toUpperCase(),
+            example_response: routeModule.example_response || null,
             params: [...pathParams, ...queryParams],
-            example_response: routeModule.example_response || null
           });
         });
       }
