@@ -29,5 +29,5 @@ router.get("/ytmp3", async (req, res) => {
   }
 });
 
-router.example_response = "linkvideo";
+router.example_response = "https://youtube.com/watch?v=mkkB1EdEjbA";
 module.exports = router;

@@ -225,9 +225,6 @@ function showEndpointDetails(endpoint, categoryName) {
                 <i class="fas fa-copy"></i>
             </button>
         </div>
-        <h4>Description</h4>
-        <p>${category.description}</p>
-        
         <h4>Parameters</h4>
         <table class="params-table">
             <thead>
@@ -253,8 +250,16 @@ function showEndpointDetails(endpoint, categoryName) {
         
         <h4>Example Request</h4>
         <div class="endpoint-url">
-            ${window.location.origin}${endpoint.path}${endpoint.params.length > 0 ? '?' + endpoint.params.map(p => `${p}=example_value`).join('&') : ''}
-            <button class="copy-btn" onclick="copyToClipboard('${window.location.origin}${endpoint.path}${endpoint.params.length > 0 ? '?' + endpoint.params.map(p => `${p}=example_value`).join('&') : ''}')">
+            ${window.location.origin}${endpoint.path}${
+  endpoint.params.length > 0
+    ? "?" + endpoint.params.map(p => `${p}=${endpoint.example_response || "example_value"}`).join("&")
+    : ""
+}
+            <button class="copy-btn" onclick="copyToClipboard('${window.location.origin}${endpoint.path}${
+  endpoint.params.length > 0
+    ? "?" + endpoint.params.map(p => `${p}=${endpoint.example_response || "example_value"}`).join("&")
+    : ""
+}')">
                 <i class="fas fa-copy"></i>
             </button>
         </div>
