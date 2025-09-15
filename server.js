@@ -76,54 +76,52 @@ const loadRoutes = () => {
   const apiRouteFiles = readFilesRecursive(apiRoutesDir);
 
   for (const file of apiRouteFiles) {
-    const relativePath = path.relative(apiRoutesDir, file).replace(/\\/g, "/");
-    const routeName = relativePath.replace(".js", "");
+  const relativePath = path.relative(apiRoutesDir, file).replace(/\\/g, "/");
+  const routeName = relativePath.replace(".js", "");
 
-    // Ambil nama kategori dari folder paling atas (contoh: "download")
-    const categoryName = routeName.split("/")[0];
+  // Ambil nama kategori dari folder paling atas (contoh: "download")
+  const categoryName = routeName.split("/")[0];
 
+  const routeModule = require(file);
 
-    const routeModule = require(file);
-    const urlPrefix = "/" + routeName; // contoh: /download/ytmp4
-    app.use(urlPrefix, routeModule);
+  // Prefix hanya berdasarkan folder (contoh: /download)
+  const urlPrefix = "/" + categoryName; 
+  app.use(urlPrefix, routeModule);
 
-    const fileContent = fs.readFileSync(file, "utf8");
+  const fileContent = fs.readFileSync(file, "utf8");
 
-    const moduleEndpoints = [];
-    routeModule.stack.forEach(layer => {
-      if (layer.route) {
-        const routePath = layer.route.path;
-        const methods = Object.keys(layer.route.methods);
-        methods.forEach(method => {
-          const fullPath = `${urlPrefix}${routePath}`;
-          const pathParams = extractPathParams(routePath);
+  const moduleEndpoints = [];
+  routeModule.stack.forEach(layer => {
+    if (layer.route) {
+      const routePath = layer.route.path; // contoh: /ytmp3
+      const methods = Object.keys(layer.route.methods);
 
-          // Ambil query param
-          const queryParams = extractQueryParams(fileContent);
+      methods.forEach(method => {
+        const fullPath = `${urlPrefix}${routePath}`; // hasil: /download/ytmp3
+        const pathParams = extractPathParams(routePath);
+        const queryParams = extractQueryParams(fileContent);
 
-          moduleEndpoints.push({
-            path: fullPath,
-            method: method.toUpperCase(),
-            example_response: routeModule.example_response || null,
-            params: [...pathParams, ...queryParams],
-          });
+        moduleEndpoints.push({
+          path: fullPath,
+          method: method.toUpperCase(),
+          example_response: routeModule.example_response || null,
+          params: [...pathParams, ...queryParams],
         });
-      }
-    });
+      });
+    }
+  });
 
-    if (!categories[categoryName.charAt(0).toUpperCase() + categoryName.slice(1)]) {
-  categories[categoryName.charAt(0).toUpperCase() + categoryName.slice(1)] = {
-    description: `APIs for ${categoryName}`,
-    endpoints: [],
-  };
-}
-
-// Tambahkan endpoint ke kategori yang sama
-categories[categoryName.charAt(0).toUpperCase() + categoryName.slice(1)].endpoints.push(...moduleEndpoints);
-
-
-    totalEndpoints += moduleEndpoints.length;
+  if (!categories[categoryName.charAt(0).toUpperCase() + categoryName.slice(1)]) {
+    categories[categoryName.charAt(0).toUpperCase() + categoryName.slice(1)] = {
+      description: `APIs for ${categoryName}`,
+      endpoints: [],
+    };
   }
+
+  categories[categoryName.charAt(0).toUpperCase() + categoryName.slice(1)].endpoints.push(...moduleEndpoints);
+
+  totalEndpoints += moduleEndpoints.length;
+}
 
   return { categories, totalEndpoints };
 };
