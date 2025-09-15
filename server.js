@@ -10,7 +10,6 @@ const db = require("./models/database");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
 app.use(cors()); 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -18,7 +17,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Serve static files
 app.use(express.static(path.join(__dirname, "static")));
 
-// Fungsi untuk ambil query parameter dari code route
+// === Helper untuk parsing parameter dari kode route ===
 const extractQueryParams = (handlerCode) => {
   const params = new Set();
 
@@ -43,13 +42,12 @@ const extractQueryParams = (handlerCode) => {
   return Array.from(params);
 };
 
-// Fungsi untuk load semua route dalam folder routes/api
+// === Loader otomatis untuk routes ===
 const loadRoutes = () => {
   const apiRoutesDir = path.join(__dirname, "routes", "api");
   const categories = {};
   let totalEndpoints = 0;
 
-  // Helper ambil parameter dari path
   const extractPathParams = (routePath) => {
     const params = [];
     const regex = /:([a-zA-Z0-9_]+)/g;
@@ -60,17 +58,33 @@ const loadRoutes = () => {
     return params;
   };
 
-  // Baca semua file route
-  const apiRouteFiles = fs.readdirSync(apiRoutesDir).filter(file => file.endsWith(".js"));
+  // Baca semua file .js dalam folder routes/api (rekursif)
+  const readFilesRecursive = (dir) => {
+    const files = fs.readdirSync(dir);
+    let result = [];
+    for (const file of files) {
+      const fullPath = path.join(dir, file);
+      const stat = fs.statSync(fullPath);
+      if (stat.isDirectory()) {
+        result = result.concat(readFilesRecursive(fullPath));
+      } else if (file.endsWith(".js")) {
+        result.push(fullPath);
+      }
+    }
+    return result;
+  };
+
+  const apiRouteFiles = readFilesRecursive(apiRoutesDir);
 
   for (const file of apiRouteFiles) {
-    const routeName = file.replace(".js", "");
-    const routeModule = require(path.join(apiRoutesDir, file));
+    const relativePath = path.relative(apiRoutesDir, file).replace(/\\/g, "/");
+    const routeName = relativePath.replace(".js", "");
 
-    const urlPrefix = `/${routeName}`;
+    const routeModule = require(file);
+    const urlPrefix = "/" + routeName; // contoh: /download/ytmp4
     app.use(urlPrefix, routeModule);
 
-    const fileContent = fs.readFileSync(path.join(apiRoutesDir, file), "utf8");
+    const fileContent = fs.readFileSync(file, "utf8");
 
     const moduleEndpoints = [];
     routeModule.stack.forEach(layer => {
@@ -84,37 +98,21 @@ const loadRoutes = () => {
           // Ambil query param
           const queryParams = extractQueryParams(fileContent);
 
-          // Cari contoh request & response dari komentar
-          let exampleRequest = {};
-          let exampleResponse = {};
-
-          const routeIndex = fileContent.indexOf(`router.${method}("${routePath}"`);
-          if (routeIndex !== -1) {
-            const beforeRoute = fileContent.substring(Math.max(0, routeIndex - 500), routeIndex);
-            const reqMatch = beforeRoute.match(/\/\/ Example Request: ([^\n]+)/);
-            const resMatch = beforeRoute.match(/\/\/ Example Response: ([^\n]+)/);
-
-            if (reqMatch) {
-              try { exampleRequest = JSON.parse(reqMatch[1].trim()); } catch (e) {}
-            }
-            if (resMatch) {
-              try { exampleResponse = JSON.parse(resMatch[1].trim()); } catch (e) {}
-            }
-          }
-
           moduleEndpoints.push({
             path: fullPath,
             method: method.toUpperCase(),
-            params: [...pathParams, ...queryParams]
+            params: [...pathParams, ...queryParams],
+            example_response: routeModule.example_response || null
           });
         });
       }
     });
 
     categories[routeName.charAt(0).toUpperCase() + routeName.slice(1)] = {
-      description: routeModule.description || `APIs for ${routeName}`,
-      endpoints: moduleEndpoints
-    };
+    description: routeModule.description || `APIs for ${routeName}`,
+    endpoints: moduleEndpoints
+  };
+
     totalEndpoints += moduleEndpoints.length;
   }
 
@@ -123,7 +121,7 @@ const loadRoutes = () => {
 
 const { categories, totalEndpoints } = loadRoutes();
 
-// Endpoint dokumentasi API
+// === Endpoint Dokumentasi API ===
 app.get("/api", (req, res) => {
   res.json({
     status: true,
