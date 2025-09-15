@@ -108,7 +108,7 @@ const loadRoutes = () => {
       }
     });
 
-    categories[routeName] = {
+    categories[routeName.charAt(0)] = {
     description: routeModule.description || `APIs for ${routeName}`,
     endpoints: moduleEndpoints
   };
