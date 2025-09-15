@@ -102,11 +102,38 @@ const loadRoutes = () => {
         const queryParams = extractQueryParams(fileContent);
 
         moduleEndpoints.push({
-          path: fullPath,
-          method: method.toUpperCase(),
-          example_response: routeModule.example_response || null,
-          params: [...pathParams, ...queryParams],
-        });
+  path: fullPath,
+  method: method.toUpperCase(),
+  example_response: routeModule.example_response || null,
+  params: [...pathParams, ...queryParams],
+  example_url: (() => {
+    if (!routeModule.example_response) return null;
+
+    if (typeof routeModule.example_response === "string") {
+      // kalau string, pakai untuk semua param
+      return `${window.location.origin}${fullPath}${
+        queryParams.length > 0
+          ? "?" +
+            queryParams
+              .map((p) => `${p}=${routeModule.example_response}`)
+              .join("&")
+          : ""
+      }`;
+    }
+
+    if (typeof routeModule.example_response === "object") {
+      // kalau object, pakai key/value sesuai
+      const queryString = Object.entries(routeModule.example_response)
+        .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+        .join("&");
+
+      return `${window.location.origin}${fullPath}?${queryString}`;
+    }
+
+    return null;
+  })(),
+});
+
       });
     }
   });
