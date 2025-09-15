@@ -80,6 +80,10 @@ const loadRoutes = () => {
     const relativePath = path.relative(apiRoutesDir, file).replace(/\\/g, "/");
     const routeName = relativePath.replace(".js", "");
 
+    // Ambil nama kategori dari folder paling atas (contoh: "download")
+    const categoryName = routeName.split("/")[0];
+
+
     const routeModule = require(file);
     const urlPrefix = "/" + routeName; // contoh: /download/ytmp4
     app.use(urlPrefix, routeModule);
@@ -108,10 +112,17 @@ const loadRoutes = () => {
       }
     });
 
-    categories[urlPrefix] = {
-    description: routeModule.description || `APIs for ${routeName}`,
-    endpoints: moduleEndpoints
+    if (!categories[categoryName.charAt(0).toUpperCase() + categoryName.slice(1)]) {
+  categories[categoryName.charAt(0).toUpperCase() + categoryName.slice(1)] = {
+    description: `APIs for ${categoryName}`,
+    endpoints: [],
+    example_response: routeModule.example_response || null
   };
+}
+
+// Tambahkan endpoint ke kategori yang sama
+categories[categoryName.charAt(0).toUpperCase() + categoryName.slice(1)].endpoints.push(...moduleEndpoints);
+
 
     totalEndpoints += moduleEndpoints.length;
   }
