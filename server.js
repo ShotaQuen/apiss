@@ -108,7 +108,7 @@ const loadRoutes = () => {
       }
     });
 
-    categories[routeName.charAt(0)] = {
+    categories[urlPrefix.charAt(0).toUpperCase()] = {
     description: routeModule.description || `APIs for ${routeName}`,
     endpoints: moduleEndpoints
   };
