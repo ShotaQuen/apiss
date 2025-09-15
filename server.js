@@ -111,14 +111,25 @@ const loadRoutes = () => {
     }
   });
 
-  if (!categories[categoryName.charAt(0).toUpperCase() + categoryName.slice(1)]) {
-    categories[categoryName.charAt(0).toUpperCase() + categoryName.slice(1)] = {
-      description: `APIs for ${categoryName}`,
-      endpoints: [],
-    };
-  }
+  // Tambahkan endpoint ke kategori yang sama (pastikan tidak duplikat)
+const categoryKey = categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
 
-  categories[categoryName.charAt(0).toUpperCase() + categoryName.slice(1)].endpoints.push(...moduleEndpoints);
+if (!categories[categoryKey]) {
+  categories[categoryKey] = {
+    description: `APIs for ${categoryName}`,
+    endpoints: [],
+  };
+}
+
+moduleEndpoints.forEach(ep => {
+  const alreadyExists = categories[categoryKey].endpoints.some(
+    e => e.path === ep.path && e.method === ep.method
+  );
+  if (!alreadyExists) {
+    categories[categoryKey].endpoints.push(ep);
+    totalEndpoints++;
+  }
+});
 
   totalEndpoints += moduleEndpoints.length;
 }
