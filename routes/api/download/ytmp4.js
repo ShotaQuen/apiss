@@ -16,9 +16,7 @@ router.get("/ytmp4", async (req, res) => {
     res.json({
       status: true,
       creator: "BerakNews",
-      result: {
-        result
-      }
+      result
     });
   } catch (error) {
     console.error(error);
