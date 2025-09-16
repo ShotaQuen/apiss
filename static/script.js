@@ -250,12 +250,12 @@ function showEndpointDetails(endpoint, categoryName) {
         
         <h4>Example Request</h4>
         <div class="endpoint-url">
-            ${window.location.origin}${endpoint.path}${
+            https://berak-new-pjq3.vercel.app/${endpoint.path}${
   endpoint.params.length > 0
     ? "?" + endpoint.params.map(p => `${p}=${endpoint.example_response || "example_value"}`).join("&")
     : ""
 }
-            <button class="copy-btn" onclick="copyToClipboard('${window.location.origin}${endpoint.path}${
+            <button class="copy-btn" onclick="copyToClipboard('https://berak-new-pjq3.vercel.app/${endpoint.path}${
   endpoint.params.length > 0
     ? "?" + endpoint.params.map(p => `${p}=${endpoint.example_response || "example_value"}`).join("&")
     : ""
