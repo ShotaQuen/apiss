@@ -52,6 +52,7 @@ Object.keys(deps).forEach((pkgName) => {
   }
 });
 
+// Helper untuk ambil modul by nama
 global.getModule = function (name) {
   if (!name) return undefined;
   const g = toGlobalName(name);
