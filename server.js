@@ -16,6 +16,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Serve static files
 app.use(express.static(path.join(__dirname, "static")));
 
+function domain(req) {
+  return req.protocol + "://" + req.get("host");
+}
+
 // === Helper untuk parsing parameter dari kode route ===
 const extractQueryParams = (handlerCode) => {
   const params = new Set();
@@ -172,6 +176,7 @@ app.get("/api", (req, res) => {
     status: true,
     creator: "REST API Website",
     message: "Welcome to REST API Documentation",
+    domain,
     total_endpoints: totalEndpoints,
     categories: categories
   });
