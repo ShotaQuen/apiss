@@ -220,8 +220,8 @@ function showEndpointDetails(endpoint, categoryName) {
         <h3>${endpoint.path}</h3>
         <div class="endpoint-method">${endpoint.method}</div>
         <div class="endpoint-url">
-            ${window.location.origin}${endpoint.path}
-            <button class="copy-btn" onclick="copyToClipboard('${window.location.origin}${endpoint.path}')">
+            https://berak-new-pjq3.vercel.app/${endpoint.path}
+            <button class="copy-btn" onclick="copyToClipboard('https://berak-new-pjq3.vercel.app/${endpoint.path}')">
                 <i class="fas fa-copy"></i>
             </button>
         </div>
@@ -382,7 +382,7 @@ async function sendApiRequest() {
         });
         
         // Build request URL
-        const baseUrl = window.location.origin + endpoint.path;
+        const baseUrl = 'https://berak-new-pjq3.vercel.app/' + endpoint.path;
         const requestUrl = params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
         
         // Show loading
