@@ -33,6 +33,11 @@ const exported = {};
 Object.keys(deps).forEach((pkgName) => {
   const globalName = toGlobalName(pkgName);
   try {
+    // Skip nodemon di production
+    if (pkgName === "nodemon" && process.env.NODE_ENV === "production") {
+      return;
+    }
+
     const mod = require(pkgName);
 
     if (typeof global[globalName] === 'undefined') {
@@ -59,5 +64,14 @@ global.getModule = function (name) {
   if (global[g]) return global[g];
   return exported[name] || exported[g];
 };
+
+// Shim window biar tidak error di Node.js
+if (typeof global.window === "undefined") {
+  global.window = {
+    location: {
+      origin: `http://localhost:${process.env.PORT || 5000}`
+    }
+  };
+}
 
 module.exports = exported;
