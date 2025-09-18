@@ -572,9 +572,20 @@ body {
     color: var(--primary-color);
 }
 
-.endpoint-method {
+.endpoint-status.ok {
     display: inline-block;
     background: var(--success-color);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.endpoint-status.error {
+    display: inline-block;
+    background: var(--error-color);
     color: white;
     padding: 0.25rem 0.75rem;
     border-radius: var(--radius-sm);

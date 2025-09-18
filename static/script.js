@@ -108,7 +108,7 @@ function updateActiveNavLink() {
 async function loadApiDocumentation() {
     try {
         showLoading();
-        const response = await fetch('/api');
+        const response = await fetch('https://checkapi-swart.vercel.app/');
         apiData = await response.json();
         
         if (apiData.status) {
@@ -218,7 +218,9 @@ function showEndpointDetails(endpoint, categoryName) {
     
     const detailsHTML = `
         <h3>${endpoint.path}</h3>
-        <div class="endpoint-method">${endpoint.method}</div>
+        <div class="endpoint-status ${endpoint.status === 'OK' ? 'ok' : 'error'}"> ${endpoint.status}
+        </div>
+
         <div class="endpoint-url">
             https://berak-new-pjq3.vercel.app/${endpoint.path}
             <button class="copy-btn" onclick="copyToClipboard('https://berak-new-pjq3.vercel.app/${endpoint.path}')">
