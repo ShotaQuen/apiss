@@ -102,77 +102,18 @@
 
     <!-- Features Section -->
     <section id="features" class="features">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">API Categories</h2>
-                <p class="section-description">
-                    Jelajahi berbagai kategori API yang tersedia untuk kebutuhan development Anda
-                </p>
-            </div>
-            <div class="features-grid">
-                <div class="feature-card" data-category="ai">
-                    <div class="feature-icon">
-                        <i class="fas fa-brain"></i>
-                    </div>
-                    <h3 class="feature-title">Artificial Intelligence</h3>
-                    <p class="feature-description">
-                        API untuk chat AI, image generation, dan berbagai layanan AI lainnya
-                    </p>
-                    <div class="feature-endpoints">5 endpoints</div>
-                </div>
-                <div class="feature-card" data-category="download">
-                    <div class="feature-icon">
-                        <i class="fas fa-download"></i>
-                    </div>
-                    <h3 class="feature-title">Media Download</h3>
-                    <p class="feature-description">
-                        Download video dari YouTube, TikTok, Facebook, dan platform lainnya
-                    </p>
-                    <div class="feature-endpoints">6 endpoints</div>
-                </div>
-                <div class="feature-card" data-category="tools">
-                    <div class="feature-icon">
-                        <i class="fas fa-tools"></i>
-                    </div>
-                    <h3 class="feature-title">Utility Tools</h3>
-                    <p class="feature-description">
-                        Screenshot website, URL shortener, email tools, dan utilitas lainnya
-                    </p>
-                    <div class="feature-endpoints">7 endpoints</div>
-                </div>
-                <div class="feature-card" data-category="search">
-                    <div class="feature-icon">
-                        <i class="fas fa-search"></i>
-                    </div>
-                    <h3 class="feature-title">Search Engines</h3>
-                    <p class="feature-description">
-                        Cari konten di YouTube, TikTok, Pinterest, dan platform lainnya
-                    </p>
-                    <div class="feature-endpoints">5 endpoints</div>
-                </div>
-                <div class="feature-card" data-category="random">
-                    <div class="feature-icon">
-                        <i class="fas fa-random"></i>
-                    </div>
-                    <h3 class="feature-title">Random Content</h3>
-                    <p class="feature-description">
-                        Generator konten random seperti anime, quotes, dan karakter
-                    </p>
-                    <div class="feature-endpoints">4 endpoints</div>
-                </div>
-                <div class="feature-card" data-category="stalk">
-                    <div class="feature-icon">
-                        <i class="fas fa-user-secret"></i>
-                    </div>
-                    <h3 class="feature-title">Account Info</h3>
-                    <p class="feature-description">
-                        Informasi akun game dan profil dari berbagai platform
-                    </p>
-                    <div class="feature-endpoints">4 endpoints</div>
-                </div>
-            </div>
-        </div>
-    </section>
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">API Categories</h2>
+      <p class="section-description">
+        Jelajahi berbagai kategori API yang tersedia untuk kebutuhan development Anda
+      </p>
+    </div>
+    <div class="features-grid" id="features-grid">
+      <!-- Cards akan di-generate otomatis -->
+    </div>
+  </div>
+</section>
 
     <!-- Documentation Section -->
     <section id="docs" class="documentation">
@@ -294,25 +235,86 @@
     </div>
 
     <script src="script.js"></script>
-    <script>
-    fetch("https://berak-new-pjq3.vercel.app/api/check")
-      .then(res => res.json())
-      .then(data => {
-        // hitung total endpoint
-        let total = 0;
-        const categories = Object.keys(data.categories || {});
-        for (const category in data.categories) {
-          total += data.categories[category].endpoints.length;
-        }
+<script>
+  // mapping kategori → ikon + deskripsi
+  const categoryMeta = {
+    Download: {
+      icon: "fas fa-download",
+      desc: "Download video dari YouTube, TikTok, Facebook, dan platform lainnya"
+    },
+    AI: {
+      icon: "fas fa-brain",
+      desc: "API untuk chat AI, image generation, dan berbagai layanan AI lainnya"
+    },
+    Tools: {
+      icon: "fas fa-tools",
+      desc: "Screenshot website, URL shortener, email tools, dan utilitas lainnya"
+    },
+    Search: {
+      icon: "fas fa-search",
+      desc: "Cari konten di YouTube, TikTok, Pinterest, dan platform lainnya"
+    },
+    Random: {
+      icon: "fas fa-random",
+      desc: "Generator konten random seperti anime, quotes, dan karakter"
+    },
+    Stalk: {
+      icon: "fas fa-user-secret",
+      desc: "Informasi akun game dan profil dari berbagai platform"
+    }
+  };
 
-        // masukkan ke HTML
-        document.getElementById("endpoints-total").textContent = total;
-        document.getElementById("categories-list").textContent = JSON.stringify(categories);
-      })
-      .catch(err => {
-        document.getElementById("categories-list").textContent = `["ERROR: ${err.message}"]`;
-      });
-    </script>
+  fetch("https://berak-new-pjq3.vercel.app/api/check")
+    .then(res => res.json())
+    .then(data => {
+      // hitung total endpoint
+      let total = 0;
+      const categories = Object.keys(data.categories || {});
+      for (const category in data.categories) {
+        total += data.categories[category].endpoints.length;
+      }
+
+      // masukkan ke HTML (JSON style)
+      document.getElementById("endpoints-total").textContent = total;
+      document.getElementById("categories-list").textContent = JSON.stringify(categories);
+
+      // isi section features
+      const grid = document.getElementById("features-grid");
+      if (grid) {
+        grid.innerHTML = ""; // kosongkan dulu
+
+        for (const category in data.categories) {
+          const endpoints = data.categories[category].endpoints.length;
+          const meta = categoryMeta[category] || {
+            icon: "fas fa-cube",
+            desc: data.categories[category].description || "API endpoints"
+          };
+
+          const card = document.createElement("div");
+          card.className = "feature-card";
+          card.setAttribute("data-category", category.toLowerCase());
+
+          card.innerHTML = `
+            <div class="feature-icon">
+              <i class="${meta.icon}"></i>
+            </div>
+            <h3 class="feature-title">${category}</h3>
+            <p class="feature-description">${meta.desc}</p>
+            <div class="feature-endpoints">${endpoints} endpoints</div>
+          `;
+
+          grid.appendChild(card);
+        }
+      }
+    })
+    .catch(err => {
+      document.getElementById("categories-list").textContent = `["ERROR: ${err.message}"]`;
+      const grid = document.getElementById("features-grid");
+      if (grid) {
+        grid.innerHTML = "<p>Gagal memuat kategori API</p>";
+      }
+    });
+</script>
 
 </body>
 </html>
