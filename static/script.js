@@ -265,6 +265,17 @@ function showEndpointDetails(endpoint, categoryName) {
                 <i class="fas fa-copy"></i>
             </button>
         </div>
+        
+        <h4>Example Response</h4>
+        <div class="endpoint-url">
+            <pre>{
+  "status": true,
+  "creator": "REST API Website",
+  "result": {
+    "message": "Example response data"
+  }
+}</pre>
+        </div>
     `;
     
     document.querySelector('.docs-welcome').style.display = 'none';
