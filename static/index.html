@@ -295,19 +295,23 @@
 
     <script src="script.js"></script>
     <script>
-    fetch("https://berak-new-pjq3.vercel.app/api")
-        .then(res => res.json())
-        .then(data => {
-          // Hitung total endpoints dari semua kategori
-          let total = 0;
-          for (const category in data.categories) {
-            total += data.categories[category].endpoints.length;
-          }
+    fetch("https://berak-new-pjq3.vercel.app/api/check")
+      .then(res => res.json())
+      .then(data => {
+        // hitung total endpoint
+        let total = 0;
+        const categories = Object.keys(data.categories || {});
+        for (const category in data.categories) {
+          total += data.categories[category].endpoints.length;
+        }
 
-          // Masukkan ke HTML
-          document.getElementById("endpoints-total").textContent = total;
-        })
-        .catch(err => console.error("Gagal ambil data API:", err));
+        // masukkan ke HTML
+        document.getElementById("endpoints-total").textContent = total;
+        document.getElementById("categories-list").textContent = JSON.stringify(categories);
+      })
+      .catch(err => {
+        document.getElementById("categories-list").textContent = `["ERROR: ${err.message}"]`;
+      });
     </script>
 
 </body>
