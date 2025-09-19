@@ -384,7 +384,7 @@ async function sendApiRequest() {
         });
         
         // Build request URL
-        const baseUrl = 'https://berak.my.id/' + endpoint.path;
+        const baseUrl = 'https://berak.my.id' + endpoint.path;
         const requestUrl = params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
         
         // Show loading
