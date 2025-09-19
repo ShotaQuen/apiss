@@ -11,7 +11,7 @@ router.get("/ytmp3", async (req, res) => {
       });
     }
 
-    const result = await ytmp(url);
+    const result = await ytmp3(url);
 
     res.json({
       status: true,
