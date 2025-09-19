@@ -222,8 +222,8 @@ function showEndpointDetails(endpoint, categoryName) {
         </div>
 
         <div class="endpoint-url">
-            https://berak-new-pjq3.vercel.app/${endpoint.path}
-            <button class="copy-btn" onclick="copyToClipboard('https://berak-new-pjq3.vercel.app/${endpoint.path}')">
+            https://berak.my.id/${endpoint.path}
+            <button class="copy-btn" onclick="copyToClipboard('https://berak.my.id/${endpoint.path}')">
                 <i class="fas fa-copy"></i>
             </button>
         </div>
@@ -252,12 +252,12 @@ function showEndpointDetails(endpoint, categoryName) {
         
         <h4>Example Request</h4>
         <div class="endpoint-url">
-            https://berak-new-pjq3.vercel.app/${endpoint.path}${
+            https://berak.my.id/${endpoint.path}${
   endpoint.params.length > 0
     ? "?" + endpoint.params.map(p => `${p}=${endpoint.example_response || "example_value"}`).join("&")
     : ""
 }
-            <button class="copy-btn" onclick="copyToClipboard('https://berak-new-pjq3.vercel.app/${endpoint.path}${
+            <button class="copy-btn" onclick="copyToClipboard('https://berak.my.id/${endpoint.path}${
   endpoint.params.length > 0
     ? "?" + endpoint.params.map(p => `${p}=${endpoint.example_response || "example_value"}`).join("&")
     : ""
@@ -384,7 +384,7 @@ async function sendApiRequest() {
         });
         
         // Build request URL
-        const baseUrl = 'https://berak-new-pjq3.vercel.app/' + endpoint.path;
+        const baseUrl = 'https://berak.my.id/' + endpoint.path;
         const requestUrl = params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
         
         // Show loading
