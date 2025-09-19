@@ -152,16 +152,18 @@ app.get("/api", (req, res) => {
 });
 
 app.get("/api/check", async (req, res) => {
-const apiUrl = '/api';
+  const apiUrl = "https://berak-new-pjq3.vercel.app/api"; // pakai API utama
 
-let apiDoc = {
-  status: true,
-  creator: "REST API Website",
-  message: "Welcome to REST API Documentation",
-  total_endpoints: 0,
-  categories: {}
-};
-  const response = await axios.get(apiUrl, { timeout: 5000 });
+  let apiDoc = {
+    status: true,
+    creator: "REST API Website",
+    message: "Welcome to REST API Documentation",
+    total_endpoints: 0,
+    categories: {}
+  };
+
+  try {
+    const response = await axios.get(apiUrl, { timeout: 5000 });
     const data = response.data;
 
     let totalEndpoints = 0;
@@ -199,7 +201,7 @@ let apiDoc = {
             epData.status = check.status === 200 ? "OK" : "ERROR";
           } catch (err) {
             if (err.response) {
-              epData.status = "ERROR";
+              epData.status = `ERROR ${err.response.status}`;
             } else if (err.request) {
               epData.status = "NO RESPONSE";
             } else {
@@ -217,14 +219,26 @@ let apiDoc = {
       };
     }
 
-    // Update global apiDoc
+    // Update apiDoc
     apiDoc = {
       status: true,
       creator: "REST API Website",
       message: "Welcome to REST API Documentation",
       total_endpoints: totalEndpoints,
       categories
-  };
+    };
+  } catch (error) {
+    apiDoc = {
+      status: false,
+      creator: "REST API Website",
+      message: `Gagal ambil data dari ${apiUrl}: ${error.message}`,
+      total_endpoints: 0,
+      categories: {}
+    };
+  }
+
+  // Kirim response
+  res.json(apiDoc);
 });
 
 // SPA support
