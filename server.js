@@ -201,7 +201,7 @@ app.get("/api/check", async (req, res) => {
             epData.status = check.status === 200 ? "OK" : "ERROR";
           } catch (err) {
             if (err.response) {
-              epData.status = `ERROR ${err.response.status}`;
+              epData.status = `ERROR`;
             } else if (err.request) {
               epData.status = "NO RESPONSE";
             } else {
