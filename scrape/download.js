@@ -2,7 +2,7 @@ const axios = require('axios')
 
 const RAPID_KEY = "1dda0d29d3mshc5f2aacec619c44p16f219jsn99a62a516f98"; // ganti dengan key kamu
 
-async function fetchMedia(url) {
+async function aio(url) {
   if (!url || !url.includes("https://")) throw new Error("Url is required");
 
   const { data } = await axios.post(
@@ -29,9 +29,21 @@ async function fetchMedia(url) {
   return data;
 }
 
-async function ytmp3(url) {
+async function tiktokAll(url) {
+  if (!url || !url.includes("https://vt.tiktok.com/")) throw new Error("Ini bukan link TikTok");
   try {
-    const data = await fetchMedia(url);
+    const data = await aio(url);
+
+    return data
+  } catch (error) {
+    return { status: false, msg: error.message };
+  }
+}
+
+async function ytmp3(url) {
+  if (!url || !url.includes("https://youtube.com/")) throw new Error("Ini bukan link YouTube");
+  try {
+    const data = await aio(url);
 
     const audio = data.medias.find(
       (m) => m.type === "audio" || m.extension === "mp3"
@@ -59,8 +71,9 @@ async function ytmp3(url) {
 }
 
 async function ytmp4(url) {
+  if (!url || !url.includes("https://youtube.com/")) throw new Error("Ini bukan link YouTube");
   try {
-    const data = await fetchMedia(url);
+    const data = await aio(url);
 
     const video = data.medias.find(
       (m) => m.type === "video" || m.extension === "mp4"
@@ -89,5 +102,6 @@ async function ytmp4(url) {
 
 module.exports = {
   ytmp4,
-  ytmp3
+  ytmp3,
+  tiktokAll
 }
