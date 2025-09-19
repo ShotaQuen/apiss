@@ -152,7 +152,7 @@ app.get("/api", (req, res) => {
 });
 
 app.get("/api/check", async (req, res) => {
-  const baseUrl = `https://berak-new-pjq3.vercel.app/api`;
+  const baseUrl = `/api`;
   const categoriesCheck = {};
   let totalEndpoints = 0;
 
@@ -163,15 +163,19 @@ app.get("/api/check", async (req, res) => {
       endpoints: []
     };
 
+    // cek setiap endpoint
     for (const endpoint of category.endpoints) {
       const url = `${baseUrl}${endpoint.path}`;
-      let statusOk = false;
+      let statusText = "ERROR";
 
       try {
         const response = await axios.get(url, { timeout: 5000 });
-        statusOk = response.status === 200;
+        if (response.status === 200) {
+          statusText = "OK";
+        }
       } catch (err) {
-        statusOk = false;
+        // tetap ERROR tapi tetap ditampilkan
+        statusText = "ERROR";
       }
 
       categoriesCheck[categoryName].endpoints.push({
@@ -179,7 +183,7 @@ app.get("/api/check", async (req, res) => {
         method: endpoint.method,
         example_response: endpoint.example_response || null,
         params: endpoint.params || [],
-        status: statusOk ? "OK" : "ERROR"
+        status: statusText
       });
 
       totalEndpoints++;
