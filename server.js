@@ -151,6 +151,50 @@ app.get("/api", (req, res) => {
   });
 });
 
+app.get("/api/check", async (req, res) => {
+  const baseUrl = `https://berak-new-pjq3.vercel.app/api`;
+  const categoriesCheck = {};
+  let totalEndpoints = 0;
+
+  for (const categoryName in categories) {
+    const category = categories[categoryName];
+    categoriesCheck[categoryName] = {
+      description: category.description,
+      endpoints: []
+    };
+
+    for (const endpoint of category.endpoints) {
+      const url = `${baseUrl}${endpoint.path}`;
+      let statusOk = false;
+
+      try {
+        const response = await axios.get(url, { timeout: 5000 });
+        statusOk = response.status === 200;
+      } catch (err) {
+        statusOk = false;
+      }
+
+      categoriesCheck[categoryName].endpoints.push({
+        path: endpoint.path,
+        method: endpoint.method,
+        example_response: endpoint.example_response || null,
+        params: endpoint.params || [],
+        status: statusOk ? "OK" : "ERROR"
+      });
+
+      totalEndpoints++;
+    }
+  }
+
+  res.json({
+    status: true,
+    creator: "REST API Website",
+    message: "Welcome to REST API Documentation",
+    total_endpoints: totalEndpoints,
+    categories: categoriesCheck
+  });
+});
+
 // SPA support
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "static", "index.html"));

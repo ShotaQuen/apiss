@@ -108,7 +108,7 @@ function updateActiveNavLink() {
 async function loadApiDocumentation() {
     try {
         showLoading();
-        const response = await fetch('https://checkapi-swart.vercel.app/');
+        const response = await fetch('/api/check');
         apiData = await response.json();
         
         if (apiData.status) {
