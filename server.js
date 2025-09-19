@@ -152,51 +152,79 @@ app.get("/api", (req, res) => {
 });
 
 app.get("/api/check", async (req, res) => {
-  const baseUrl = `/api`;
-  const categoriesCheck = {};
-  let totalEndpoints = 0;
+const apiUrl = '/api';
 
-  for (const categoryName in categories) {
-    const category = categories[categoryName];
-    categoriesCheck[categoryName] = {
-      description: category.description,
-      endpoints: []
-    };
+let apiDoc = {
+  status: true,
+  creator: "REST API Website",
+  message: "Welcome to REST API Documentation",
+  total_endpoints: 0,
+  categories: {}
+};
+  const response = await axios.get(apiUrl, { timeout: 5000 });
+    const data = response.data;
 
-    // cek setiap endpoint
-    for (const endpoint of category.endpoints) {
-      const url = `${baseUrl}${endpoint.path}`;
-      let statusText = "ERROR";
+    let totalEndpoints = 0;
+    let categories = {};
 
-      try {
-        const response = await axios.get(url, { timeout: 5000 });
-        if (response.status === 200) {
-          statusText = "OK";
+    // Loop kategori
+    for (const [categoryName, category] of Object.entries(data.categories)) {
+      const endpointsArr = [];
+
+      if (category.endpoints && category.endpoints.length > 0) {
+        for (const endpoint of category.endpoints) {
+          totalEndpoints++;
+
+          // Bangun URL test dengan params
+          let urlRest = `https://berak-new-pjq3.vercel.app${endpoint.path}`;
+          if (endpoint.params && endpoint.params.length > 0) {
+            const queryParams = endpoint.params.map((param, idx) => {
+              if (param === "url") return `${param}=${encodeURIComponent(endpoint.example_response)}`;
+              return `${param}=test${idx}`;
+            }).join("&");
+            urlRest += `?${queryParams}`;
+          }
+
+          // Default endpoint data
+          const epData = {
+            path: endpoint.path,
+            method: endpoint.method,
+            example_response: endpoint.example_response,
+            params: endpoint.params || []
+          };
+
+          // Cek status endpoint
+          try {
+            const check = await axios.get(urlRest, { timeout: 5000 });
+            epData.status = check.status === 200 ? "OK" : "ERROR";
+          } catch (err) {
+            if (err.response) {
+              epData.status = "ERROR";
+            } else if (err.request) {
+              epData.status = "NO RESPONSE";
+            } else {
+              epData.status = "ERROR";
+            }
+          }
+
+          endpointsArr.push(epData);
         }
-      } catch (err) {
-        // tetap ERROR tapi tetap ditampilkan
-        statusText = "ERROR";
       }
 
-      categoriesCheck[categoryName].endpoints.push({
-        path: endpoint.path,
-        method: endpoint.method,
-        example_response: endpoint.example_response || null,
-        params: endpoint.params || [],
-        status: statusText
-      });
-
-      totalEndpoints++;
+      categories[categoryName] = {
+        description: category.description || "",
+        endpoints: endpointsArr
+      };
     }
-  }
 
-  res.json({
-    status: true,
-    creator: "REST API Website",
-    message: "Welcome to REST API Documentation",
-    total_endpoints: totalEndpoints,
-    categories: categoriesCheck
-  });
+    // Update global apiDoc
+    apiDoc = {
+      status: true,
+      creator: "REST API Website",
+      message: "Welcome to REST API Documentation",
+      total_endpoints: totalEndpoints,
+      categories
+  };
 });
 
 // SPA support
