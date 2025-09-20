@@ -3,18 +3,52 @@ const cors = require("cors");
 const path = require("path");
 const bodyParser = require("body-parser");
 const fs = require("fs");
-require('./settings/module.js');
-const app = express();
+const axios = require("axios");
+require("./settings/module.js");
 
+const app = express();
 const db = require("./models/database");
 const PORT = process.env.PORT || 5000;
 
-app.use(cors()); 
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Serve static files
 app.use(express.static(path.join(__dirname, "static")));
+
+// === Hitung total request ===
+const requestFile = path.join(__dirname, "/database/requests.json");
+
+let totalRequests = 0;
+if (fs.existsSync(requestFile)) {
+  try {
+    totalRequests = JSON.parse(fs.readFileSync(requestFile, "utf8")).total || 0;
+  } catch {
+    totalRequests = 0;
+  }
+}
+
+// Middleware global untuk hitung request
+app.use((req, res, next) => {
+  totalRequests++;
+
+  // Simpan ke file
+  fs.writeFileSync(
+    requestFile,
+    JSON.stringify({ total: totalRequests }, null, 2)
+  );
+
+  next();
+});
+
+// Endpoint cek total request
+app.get("/api/requests", (req, res) => {
+  res.json({
+    status: true,
+    total_requests: totalRequests,
+  });
+});
 
 // === Helper untuk parsing parameter dari kode route ===
 const extractQueryParams = (handlerCode) => {
@@ -57,7 +91,6 @@ const loadRoutes = () => {
     return params;
   };
 
-  // Baca semua file .js dalam folder routes/api (rekursif)
   const readFilesRecursive = (dir) => {
     const files = fs.readdirSync(dir);
     let result = [];
@@ -76,64 +109,60 @@ const loadRoutes = () => {
   const apiRouteFiles = readFilesRecursive(apiRoutesDir);
 
   for (const file of apiRouteFiles) {
-  const relativePath = path.relative(apiRoutesDir, file).replace(/\\/g, "/");
-  const routeName = relativePath.replace(".js", "");
+    const relativePath = path.relative(apiRoutesDir, file).replace(/\\/g, "/");
+    const routeName = relativePath.replace(".js", "");
 
-  // Ambil nama kategori dari folder paling atas (contoh: "download")
-  const categoryName = routeName.split("/")[0];
+    const categoryName = routeName.split("/")[0];
+    const routeModule = require(file);
 
-  const routeModule = require(file);
+    const urlPrefix = "/" + categoryName;
+    app.use(urlPrefix, routeModule);
 
-  // Prefix hanya berdasarkan folder (contoh: /download)
-  const urlPrefix = "/" + categoryName; 
-  app.use(urlPrefix, routeModule);
+    const fileContent = fs.readFileSync(file, "utf8");
 
-  const fileContent = fs.readFileSync(file, "utf8");
+    const moduleEndpoints = [];
+    routeModule.stack.forEach((layer) => {
+      if (layer.route) {
+        const routePath = layer.route.path;
+        const methods = Object.keys(layer.route.methods);
 
-  const moduleEndpoints = [];
-  routeModule.stack.forEach(layer => {
-    if (layer.route) {
-      const routePath = layer.route.path; // contoh: /ytmp3
-      const methods = Object.keys(layer.route.methods);
+        methods.forEach((method) => {
+          const fullPath = `${urlPrefix}${routePath}`;
+          const pathParams = extractPathParams(routePath);
+          const queryParams = extractQueryParams(fileContent);
 
-      methods.forEach(method => {
-        const fullPath = `${urlPrefix}${routePath}`; // hasil: /download/ytmp3
-        const pathParams = extractPathParams(routePath);
-        const queryParams = extractQueryParams(fileContent);
+          moduleEndpoints.push({
+            path: fullPath,
+            method: method.toUpperCase(),
+            example_response: routeModule.example_response || null,
+            params: [...pathParams, ...queryParams],
+          });
+        });
+      }
+    });
 
-        moduleEndpoints.push({
-  path: fullPath,
-  method: method.toUpperCase(),
-  example_response: routeModule.example_response || null,
-  params: [...pathParams, ...queryParams]
-});
+    const categoryKey =
+      categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
 
-      });
+    if (!categories[categoryKey]) {
+      categories[categoryKey] = {
+        description: `APIs for ${categoryName}`,
+        endpoints: [],
+      };
     }
-  });
 
-  // Tambahkan endpoint ke kategori yang sama (pastikan tidak duplikat)
-const categoryKey = categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
+    moduleEndpoints.forEach((ep) => {
+      const alreadyExists = categories[categoryKey].endpoints.some(
+        (e) => e.path === ep.path && e.method === ep.method
+      );
+      if (!alreadyExists) {
+        categories[categoryKey].endpoints.push(ep);
+        totalEndpoints++;
+      }
+    });
 
-if (!categories[categoryKey]) {
-  categories[categoryKey] = {
-    description: `APIs for ${categoryName}`,
-    endpoints: [],
-  };
-}
-
-moduleEndpoints.forEach(ep => {
-  const alreadyExists = categories[categoryKey].endpoints.some(
-    e => e.path === ep.path && e.method === ep.method
-  );
-  if (!alreadyExists) {
-    categories[categoryKey].endpoints.push(ep);
-    totalEndpoints++;
+    totalEndpoints += moduleEndpoints.length;
   }
-});
-
-  totalEndpoints += moduleEndpoints.length;
-}
 
   return { categories, totalEndpoints };
 };
@@ -147,19 +176,20 @@ app.get("/api", (req, res) => {
     creator: "REST API Website",
     message: "Welcome to REST API Documentation",
     total_endpoints: totalEndpoints,
-    categories: categories
+    total_requests: totalRequests,
+    categories: categories,
   });
 });
 
 app.get("/api/check", async (req, res) => {
-  const apiUrl = "https://berak-new-pjq3.vercel.app/api"; // pakai API utama
+  const apiUrl = "https://berak-new-pjq3.vercel.app/api";
 
   let apiDoc = {
     status: true,
     creator: "REST API Website",
     message: "Welcome to REST API Documentation",
     total_endpoints: 0,
-    categories: {}
+    categories: {},
   };
 
   try {
@@ -169,7 +199,6 @@ app.get("/api/check", async (req, res) => {
     let totalEndpoints = 0;
     let categories = {};
 
-    // Loop kategori
     for (const [categoryName, category] of Object.entries(data.categories)) {
       const endpointsArr = [];
 
@@ -177,25 +206,27 @@ app.get("/api/check", async (req, res) => {
         for (const endpoint of category.endpoints) {
           totalEndpoints++;
 
-          // Bangun URL test dengan params
           let urlRest = `https://berak-new-pjq3.vercel.app${endpoint.path}`;
           if (endpoint.params && endpoint.params.length > 0) {
-            const queryParams = endpoint.params.map((param, idx) => {
-              if (param === "url") return `${param}=${encodeURIComponent(endpoint.example_response)}`;
-              return `${param}=test${idx}`;
-            }).join("&");
+            const queryParams = endpoint.params
+              .map((param, idx) => {
+                if (param === "url")
+                  return `${param}=${encodeURIComponent(
+                    endpoint.example_response
+                  )}`;
+                return `${param}=test${idx}`;
+              })
+              .join("&");
             urlRest += `?${queryParams}`;
           }
 
-          // Default endpoint data
           const epData = {
             path: endpoint.path,
             method: endpoint.method,
             example_response: endpoint.example_response,
-            params: endpoint.params || []
+            params: endpoint.params || [],
           };
 
-          // Cek status endpoint
           try {
             const check = await axios.get(urlRest, { timeout: 5000 });
             epData.status = check.status === 200 ? "OK" : "ERROR";
@@ -215,17 +246,17 @@ app.get("/api/check", async (req, res) => {
 
       categories[categoryName] = {
         description: category.description || "",
-        endpoints: endpointsArr
+        endpoints: endpointsArr,
       };
     }
 
-    // Update apiDoc
     apiDoc = {
       status: true,
       creator: "REST API Website",
       message: "Welcome to REST API Documentation",
       total_endpoints: totalEndpoints,
-      categories
+      total_requests: totalRequests,
+      categories,
     };
   } catch (error) {
     apiDoc = {
@@ -233,11 +264,11 @@ app.get("/api/check", async (req, res) => {
       creator: "REST API Website",
       message: `Gagal ambil data dari ${apiUrl}: ${error.message}`,
       total_endpoints: 0,
-      categories: {}
+      total_requests: totalRequests,
+      categories: {},
     };
   }
 
-  // Kirim response
   res.json(apiDoc);
 });
 
