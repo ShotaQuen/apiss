@@ -4,11 +4,17 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const fs = require("fs");
 const axios = require("axios");
+require("dotenv").config();
 require("./settings/module.js");
 
+const { createClient } = require("@supabase/supabase-js");
+
 const app = express();
-const db = require("./models/database");
 const PORT = process.env.PORT || 5000;
+
+// === Supabase Client ===
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+const TABLE_NAME = process.env.SUPABASE_TABLE || "request_count";
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -17,44 +23,55 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Serve static files
 app.use(express.static(path.join(__dirname, "static")));
 
-// === Hitung total request ===
-const requestFile = path.join(__dirname, "database/requests.json");
-
-let totalRequests = 0;
-if (fs.existsSync(requestFile)) {
+// === Middleware global untuk hitung request ===
+app.use(async (req, res, next) => {
   try {
-    totalRequests = JSON.parse(fs.readFileSync(requestFile, "utf8")).total || 0;
-  } catch {
-    totalRequests = 0;
+    const { data, error } = await supabase
+      .from(TABLE_NAME)
+      .select("id, total")
+      .limit(1)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    if (data) {
+      await supabase
+        .from(TABLE_NAME)
+        .update({ total: data.total + 1 })
+        .eq("id", data.id);
+    } else {
+      await supabase.from(TABLE_NAME).insert([{ total: 1 }]);
+    }
+  } catch (err) {
+    console.error("❌ Error update request count:", err.message);
   }
-}
-
-// Middleware global untuk hitung request
-app.use((req, res, next) => {
-  totalRequests++;
-
-  // Simpan ke file
-  fs.writeFileSync(
-    requestFile,
-    JSON.stringify({ total: totalRequests }, null, 2)
-  );
-
   next();
 });
 
 // Endpoint cek total request
-app.get("/api/requests", (req, res) => {
-  res.json({
-    status: true,
-    total_requests: totalRequests,
-  });
+app.get("/api/requests", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from(TABLE_NAME)
+      .select("total")
+      .limit(1)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    res.json({
+      status: true,
+      total_requests: data ? data.total : 0,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-// === Helper untuk parsing parameter dari kode route ===
+// === Loader otomatis untuk routes (tidak diubah) ===
 const extractQueryParams = (handlerCode) => {
   const params = new Set();
 
-  // Pattern 1: const { param } = req.query
   const destructuringPattern = /const\s*{\s*([^}]+)\s*}\s*=\s*req\.query/g;
   let match;
   while ((match = destructuringPattern.exec(handlerCode)) !== null) {
@@ -66,7 +83,6 @@ const extractQueryParams = (handlerCode) => {
     paramNames.forEach((param) => params.add(param));
   }
 
-  // Pattern 2: req.query.paramName
   const directAccessPattern = /req\.query\.([a-zA-Z_$][a-zA-Z0-9_$]*)/g;
   while ((match = directAccessPattern.exec(handlerCode)) !== null) {
     params.add(match[1]);
@@ -75,7 +91,6 @@ const extractQueryParams = (handlerCode) => {
   return Array.from(params);
 };
 
-// === Loader otomatis untuk routes ===
 const loadRoutes = () => {
   const apiRoutesDir = path.join(__dirname, "routes", "api");
   const categories = {};
@@ -170,106 +185,21 @@ const loadRoutes = () => {
 const { categories, totalEndpoints } = loadRoutes();
 
 // === Endpoint Dokumentasi API ===
-app.get("/api", (req, res) => {
+app.get("/api", async (req, res) => {
+  const { data } = await supabase
+    .from(TABLE_NAME)
+    .select("total")
+    .limit(1)
+    .maybeSingle();
+
   res.json({
     status: true,
     creator: "REST API Website",
     message: "Welcome to REST API Documentation",
     total_endpoints: totalEndpoints,
-    total_requests: totalRequests,
+    total_requests: data ? data.total : 0,
     categories: categories,
   });
-});
-
-app.get("/api/check", async (req, res) => {
-  const apiUrl = "https://berak-new-pjq3.vercel.app/api";
-
-  let apiDoc = {
-    status: true,
-    creator: "REST API Website",
-    message: "Welcome to REST API Documentation",
-    total_endpoints: 0,
-    categories: {},
-  };
-
-  try {
-    const response = await axios.get(apiUrl, { timeout: 5000 });
-    const data = response.data;
-
-    let totalEndpoints = 0;
-    let categories = {};
-
-    for (const [categoryName, category] of Object.entries(data.categories)) {
-      const endpointsArr = [];
-
-      if (category.endpoints && category.endpoints.length > 0) {
-        for (const endpoint of category.endpoints) {
-          totalEndpoints++;
-
-          let urlRest = `https://berak-new-pjq3.vercel.app${endpoint.path}`;
-          if (endpoint.params && endpoint.params.length > 0) {
-            const queryParams = endpoint.params
-              .map((param, idx) => {
-                if (param === "url")
-                  return `${param}=${encodeURIComponent(
-                    endpoint.example_response
-                  )}`;
-                return `${param}=test${idx}`;
-              })
-              .join("&");
-            urlRest += `?${queryParams}`;
-          }
-
-          const epData = {
-            path: endpoint.path,
-            method: endpoint.method,
-            example_response: endpoint.example_response,
-            params: endpoint.params || [],
-          };
-
-          try {
-            const check = await axios.get(urlRest, { timeout: 5000 });
-            epData.status = check.status === 200 ? "OK" : "ERROR";
-          } catch (err) {
-            if (err.response) {
-              epData.status = `ERROR`;
-            } else if (err.request) {
-              epData.status = "NO RESPONSE";
-            } else {
-              epData.status = "ERROR";
-            }
-          }
-
-          endpointsArr.push(epData);
-        }
-      }
-
-      categories[categoryName] = {
-        description: category.description || "",
-        endpoints: endpointsArr,
-      };
-    }
-
-    apiDoc = {
-      status: true,
-      creator: "REST API Website",
-      message: "Welcome to REST API Documentation",
-      total_endpoints: totalEndpoints,
-      total_requests: totalRequests,
-      categories,
-    };
-  } catch (error) {
-    apiDoc = {
-      status: false,
-      creator: "REST API Website",
-      message: `Gagal ambil data dari ${apiUrl}: ${error.message}`,
-      total_endpoints: 0,
-      total_requests: totalRequests,
-      categories: {},
-    };
-  }
-
-  res.json(apiDoc);
 });
 
 // SPA support
@@ -277,15 +207,8 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "static", "index.html"));
 });
 
-// Start server setelah DB siap
-db.initialize()
-  .then(() => {
-    app.listen(PORT, "0.0.0.0", () => {
-      console.log(`Server running at http://0.0.0.0:${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error("Failed to initialize database:", err);
-  });
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`🚀 Server running at http://0.0.0.0:${PORT}`);
+});
 
 module.exports = app;
