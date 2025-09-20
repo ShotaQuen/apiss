@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "static")));
 
 // === Hitung total request ===
-const requestFile = path.join(__dirname, "/database/requests.json");
+const requestFile = path.join(__dirname, "database/requests.json");
 
 let totalRequests = 0;
 if (fs.existsSync(requestFile)) {
