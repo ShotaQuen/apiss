@@ -267,28 +267,24 @@
   fetch("https://berak-new-pjq3.vercel.app/api/check")
     .then(res => res.json())
     .then(data => {
-      // total endpoint
+      // hitung total endpoint
       let total = 0;
       const categories = Object.keys(data.categories || {});
-      for (const category of categories) {
+      for (const category in data.categories) {
         total += data.categories[category].endpoints.length;
       }
 
-      // tampilkan ke HTML (kalau elemen ada)
+      // masukkan ke HTML (JSON style)
       document.getElementById("totalRequests").textContent = data.total_requests;
+      document.getElementById("endpoints-total").textContent = total;
+      document.getElementById("categories-list").textContent = JSON.stringify(categories);
 
-      const epEl = document.getElementById("endpoints-total");
-      if (epEl) epEl.textContent = total;
-
-      const catEl = document.getElementById("categories-list");
-      if (catEl) catEl.textContent = categories.join(", ");
-
-      // isi grid kategori
+      // isi section features
       const grid = document.getElementById("features-grid");
       if (grid) {
         grid.innerHTML = ""; // kosongkan dulu
 
-        for (const category of categories) {
+        for (const category in data.categories) {
           const endpoints = data.categories[category].endpoints.length;
           const meta = categoryMeta[category] || {
             icon: "fas fa-cube",
@@ -313,18 +309,12 @@
       }
     })
     .catch(err => {
-      console.error(err);
-
-      const catEl = document.getElementById("categories-list");
-      if (catEl) catEl.textContent = `ERROR: ${err.message}`;
-
-      const reqEl = document.getElementById("totalRequests");
-      if (reqEl) reqEl.textContent = "Error loading data";
-
+      document.getElementById("categories-list").textContent = `["ERROR: ${err.message}"]`;
       const grid = document.getElementById("features-grid");
       if (grid) {
         grid.innerHTML = "<p>Gagal memuat kategori API</p>";
       }
+     console.error(err);
     });
 </script>
 
