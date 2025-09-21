@@ -18,6 +18,50 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Serve static files
 app.use(express.static(path.join(__dirname, "static")));
 
+app.use(async (req, res, next) => {
+  try {
+    const { data, error } = await supabase
+      .from(TABLE_NAME)
+      .select("id, total")
+      .limit(1)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    if (data) {
+      await supabase
+        .from(TABLE_NAME)
+        .update({ total: data.total + 1 })
+        .eq("id", data.id);
+    } else {
+      await supabase.from(TABLE_NAME).insert([{ total: 1 }]);
+    }
+  } catch (err) {
+    console.error("❌ Error update request count:", err.message);
+  }
+  next();
+});
+
+app.get("/api/requests", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from(TABLE_NAME)
+      .select("total")
+      .limit(1)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    res.json({
+      status: true,
+      total_requests: data ? data.total : 0,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 // === Loader otomatis untuk routes ===
 const extractQueryParams = (handlerCode) => {
   const params = new Set();
