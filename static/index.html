@@ -275,8 +275,7 @@
       }
 
       // tampilkan ke HTML (kalau elemen ada)
-      const reqEl = document.getElementById("totalRequests");
-      if (reqEl) reqEl.textContent = data.total_requests;
+      document.getElementById("totalRequests").textContent = data.total_requests;
 
       const epEl = document.getElementById("endpoints-total");
       if (epEl) epEl.textContent = total;
