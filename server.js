@@ -1,4 +1,3 @@
-// server.js
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
@@ -8,8 +7,13 @@ const axios = require("axios");
 require("dotenv").config();
 require("./settings/module.js");
 
+const { createClient } = require("@supabase/supabase-js");
+
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// === Supabase client ===
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -18,23 +22,25 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Serve static files
 app.use(express.static(path.join(__dirname, "static")));
 
+// === Middleware global untuk hitung request ===
 app.use(async (req, res, next) => {
   try {
+    // ambil baris pertama
     const { data, error } = await supabase
-      .from(TABLE_NAME)
+      .from("request_count")
       .select("id, total")
       .limit(1)
       .maybeSingle();
 
-    if (error) throw error;
+    if (error) console.error("❌ Supabase select error:", error);
 
     if (data) {
       await supabase
-        .from(TABLE_NAME)
+        .from("request_count")
         .update({ total: data.total + 1 })
         .eq("id", data.id);
     } else {
-      await supabase.from(TABLE_NAME).insert([{ total: 1 }]);
+      await supabase.from("request_count").insert([{ total: 1 }]);
     }
   } catch (err) {
     console.error("❌ Error update request count:", err.message);
@@ -42,15 +48,16 @@ app.use(async (req, res, next) => {
   next();
 });
 
+// Endpoint cek total request
 app.get("/api/requests", async (req, res) => {
   try {
     const { data, error } = await supabase
-      .from(TABLE_NAME)
+      .from("request_count")
       .select("total")
       .limit(1)
       .maybeSingle();
 
-    if (error) throw error;
+    if (error) throw new Error(error.message);
 
     res.json({
       status: true,
@@ -61,66 +68,51 @@ app.get("/api/requests", async (req, res) => {
   }
 });
 
-
-// === Loader otomatis untuk routes ===
+// === Helper parsing query params ===
 const extractQueryParams = (handlerCode) => {
   const params = new Set();
-
   const destructuringPattern = /const\s*{\s*([^}]+)\s*}\s*=\s*req\.query/g;
   let match;
   while ((match = destructuringPattern.exec(handlerCode)) !== null) {
-    const paramString = match[1];
-    const paramNames = paramString.split(",").map((p) => {
-      const cleanParam = p.split("=")[0].trim();
-      return cleanParam;
-    });
-    paramNames.forEach((param) => params.add(param));
+    match[1].split(",").forEach((p) => params.add(p.split("=")[0].trim()));
   }
-
   const directAccessPattern = /req\.query\.([a-zA-Z_$][a-zA-Z0-9_$]*)/g;
   while ((match = directAccessPattern.exec(handlerCode)) !== null) {
     params.add(match[1]);
   }
-
   return Array.from(params);
 };
 
+// === Loader otomatis routes ===
 const loadRoutes = () => {
   const apiRoutesDir = path.join(__dirname, "routes", "api");
   const categories = {};
   let totalEndpoints = 0;
 
   const extractPathParams = (routePath) => {
-    const params = [];
     const regex = /:([a-zA-Z0-9_]+)/g;
-    let match;
-    while ((match = regex.exec(routePath)) !== null) {
-      params.push(match[1]);
-    }
+    let match, params = [];
+    while ((match = regex.exec(routePath)) !== null) params.push(match[1]);
     return params;
   };
 
   const readFilesRecursive = (dir) => {
-    const files = fs.readdirSync(dir);
     let result = [];
-    for (const file of files) {
+    fs.readdirSync(dir).forEach((file) => {
       const fullPath = path.join(dir, file);
-      const stat = fs.statSync(fullPath);
-      if (stat.isDirectory()) {
+      if (fs.statSync(fullPath).isDirectory()) {
         result = result.concat(readFilesRecursive(fullPath));
       } else if (file.endsWith(".js")) {
         result.push(fullPath);
       }
-    }
+    });
     return result;
   };
 
   const apiRouteFiles = readFilesRecursive(apiRoutesDir);
-
   for (const file of apiRouteFiles) {
     const relativePath = path.relative(apiRoutesDir, file).replace(/\\/g, "/");
     const routeName = relativePath.replace(".js", "");
-
     const categoryName = routeName.split("/")[0];
     const routeModule = require(file);
 
@@ -128,49 +120,33 @@ const loadRoutes = () => {
     app.use(urlPrefix, routeModule);
 
     const fileContent = fs.readFileSync(file, "utf8");
-
     const moduleEndpoints = [];
+
     routeModule.stack.forEach((layer) => {
       if (layer.route) {
         const routePath = layer.route.path;
         const methods = Object.keys(layer.route.methods);
-
         methods.forEach((method) => {
-          const fullPath = `${urlPrefix}${routePath}`;
-          const pathParams = extractPathParams(routePath);
-          const queryParams = extractQueryParams(fileContent);
-
           moduleEndpoints.push({
-            path: fullPath,
+            path: `${urlPrefix}${routePath}`,
             method: method.toUpperCase(),
             example_response: routeModule.example_response || null,
-            params: [...pathParams, ...queryParams],
+            params: [...extractPathParams(routePath), ...extractQueryParams(fileContent)],
           });
         });
       }
     });
 
-    const categoryKey =
-      categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
-
+    const categoryKey = categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
     if (!categories[categoryKey]) {
-      categories[categoryKey] = {
-        description: `APIs for ${categoryName}`,
-        endpoints: [],
-      };
+      categories[categoryKey] = { description: `APIs for ${categoryName}`, endpoints: [] };
     }
-
     moduleEndpoints.forEach((ep) => {
-      const alreadyExists = categories[categoryKey].endpoints.some(
-        (e) => e.path === ep.path && e.method === ep.method
-      );
-      if (!alreadyExists) {
+      if (!categories[categoryKey].endpoints.some((e) => e.path === ep.path && e.method === ep.method)) {
         categories[categoryKey].endpoints.push(ep);
         totalEndpoints++;
       }
     });
-
-    totalEndpoints += moduleEndpoints.length;
   }
 
   return { categories, totalEndpoints };
@@ -180,13 +156,72 @@ const { categories, totalEndpoints } = loadRoutes();
 
 // === Endpoint Dokumentasi API ===
 app.get("/api", async (req, res) => {
+  const { data } = await supabase.from("request_count").select("total").limit(1).maybeSingle();
   res.json({
     status: true,
     creator: "REST API Website",
     message: "Welcome to REST API Documentation",
     total_endpoints: totalEndpoints,
-    categories: categories,
+    total_requests: data ? data.total : 0,
+    categories,
   });
+});
+
+// === API check ===
+app.get("/api/check", async (req, res) => {
+  const apiUrl = "https://berak-new-pjq3.vercel.app/api";
+  try {
+    const response = await axios.get(apiUrl, { timeout: 5000 });
+    const data = response.data;
+
+    let totalEndpoints = 0;
+    let categories = {};
+
+    for (const [categoryName, category] of Object.entries(data.categories)) {
+      const endpointsArr = [];
+      if (category.endpoints?.length > 0) {
+        for (const endpoint of category.endpoints) {
+          totalEndpoints++;
+          let urlRest = `https://berak-new-pjq3.vercel.app${endpoint.path}`;
+          if (endpoint.params?.length > 0) {
+            const queryParams = endpoint.params
+              .map((param, idx) => `${param}=test${idx}`)
+              .join("&");
+            urlRest += `?${queryParams}`;
+          }
+
+          const epData = { ...endpoint };
+          try {
+            const check = await axios.get(urlRest, { timeout: 5000 });
+            epData.status = check.status === 200 ? "OK" : "ERROR";
+          } catch {
+            epData.status = "ERROR";
+          }
+          endpointsArr.push(epData);
+        }
+      }
+      categories[categoryName] = { description: category.description || "", endpoints: endpointsArr };
+    }
+
+    const { data: counter } = await supabase.from("request_count").select("total").limit(1).maybeSingle();
+    res.json({
+      status: true,
+      creator: "REST API Website",
+      message: "Welcome to REST API Documentation",
+      total_endpoints: totalEndpoints,
+      total_requests: counter ? counter.total : 0,
+      categories,
+    });
+  } catch (error) {
+    res.json({
+      status: false,
+      creator: "REST API Website",
+      message: `Gagal ambil data dari ${apiUrl}: ${error.message}`,
+      total_endpoints: 0,
+      total_requests: 0,
+      categories: {},
+    });
+  }
 });
 
 // SPA support
