@@ -268,6 +268,7 @@
     .then(res => res.json())
     .then(data => {
       // hitung total endpoint
+      console.log("API Response:", data);
       let total = 0;
       const categories = Object.keys(data.categories || {});
       for (const category in data.categories) {
@@ -276,6 +277,7 @@
 
       // masukkan ke HTML (JSON style)
       document.getElementById("endpoints-total").textContent = total;
+      document.getElementById("totalRequests").textContent = data.total_requests ?? "N/A";
       document.getElementById("categories-list").textContent = JSON.stringify(categories);
 
       // isi section features
