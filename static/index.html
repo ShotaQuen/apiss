@@ -61,8 +61,8 @@
                 </div>
                 <div class="hero-stats">
                     <div class="stat">
-                        <div class="stat-number">35+</div>
-                        <div class="stat-label">API Endpoints</div>
+                        <div class="stat-number" id="total-anunya">0+</div>
+                        <div class="stat-label">Total Request</div>
                     </div>
                     <div class="stat">
                         <div class="stat-number">6</div>
@@ -273,9 +273,12 @@
       for (const category in data.categories) {
         total += data.categories[category].endpoints.length;
       }
+      
+      const total_req = data.total_requests
 
       // masukkan ke HTML (JSON style)
       document.getElementById("endpoints-total").textContent = total;
+      document.getElementById("total-anunya").textContent = total_req
       document.getElementById("categories-list").textContent = JSON.stringify(categories);
 
       // isi section features
