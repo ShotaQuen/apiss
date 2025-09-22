@@ -602,6 +602,7 @@ body {
     font-family: monospace;
     margin-bottom: 1.5rem;
     position: relative;
+    overflow-x: auto;
 }
 
 .copy-btn {
