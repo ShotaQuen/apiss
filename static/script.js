@@ -222,8 +222,8 @@ function showEndpointDetails(endpoint, categoryName) {
         </div>
 
         <div class="endpoint-url">
-            https://berak.my.id/${endpoint.path}
-            <button class="copy-btn" onclick="copyToClipboard('https://berak.my.id/${endpoint.path}')">
+            https://berak.my.id${endpoint.path}
+            <button class="copy-btn" onclick="copyToClipboard('https://berak.my.id${endpoint.path}')">
                 <i class="fas fa-copy"></i>
             </button>
         </div>
@@ -252,12 +252,12 @@ function showEndpointDetails(endpoint, categoryName) {
         
         <h4>Example Request</h4>
         <div class="endpoint-url">
-            https://berak.my.id/${endpoint.path}${
+            https://berak.my.id${endpoint.path}${
   endpoint.params.length > 0
     ? "?" + endpoint.params.map(p => `${p}=${endpoint.example_response || "example_value"}`).join("&")
     : ""
 }
-            <button class="copy-btn" onclick="copyToClipboard('https://berak.my.id/${endpoint.path}${
+            <button class="copy-btn" onclick="copyToClipboard('https://berak.my.id${endpoint.path}${
   endpoint.params.length > 0
     ? "?" + endpoint.params.map(p => `${p}=${endpoint.example_response || "example_value"}`).join("&")
     : ""
