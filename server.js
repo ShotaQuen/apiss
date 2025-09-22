@@ -215,14 +215,14 @@ app.get("/api/check", async (req, res) => {
           // Cek status endpoint
           try {
             const check = await axios.get(urlRest, { timeout: 5000 });
-            epData.status = check.status === 200 ? "OK" : "ERROR";
+            epData.status = check.status === 200 ? "Succses" : "Error";
           } catch (err) {
             if (err.response) {
-              epData.status = `ERROR`;
+              epData.status = `Error`;
             } else if (err.request) {
-              epData.status = "NO RESPONSE";
+              epData.status = "No response";
             } else {
-              epData.status = "ERROR";
+              epData.status = "Error";
             }
           }
 
