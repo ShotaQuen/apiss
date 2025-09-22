@@ -398,7 +398,7 @@ async function sendApiRequest() {
         const data = await response.json();
         
         // Update response display
-        responseStatus.textContent = response.ok ? `${response.status} Succses` : `${response.status} Error`;
+        responseStatus.textContent = response.ok ? `${response.status} OK` : `${response.status} Error`;
         responseStatus.className = `response-status ${response.ok ? 'success' : 'error'}`;
         responseContent.textContent = JSON.stringify(data, null, 2);
         
