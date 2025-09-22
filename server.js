@@ -159,7 +159,7 @@ app.get("/api", async (req, res) => {
   const { data } = await supabase.from("request_count").select("total").limit(1).maybeSingle();
   res.json({
     status: true,
-    creator: "REST API Website",
+    creator: "Ikann",
     message: "Welcome to REST API Documentation",
     total_endpoints: totalEndpoints,
     total_requests: data ? data.total : 0,
@@ -173,7 +173,7 @@ app.get("/api/check", async (req, res) => {
 
   let apiDoc = {
     status: true,
-    creator: "REST API Website",
+    creator: "Ikann",
     message: "Welcome to REST API Documentation",
     total_endpoints: 0,
     categories: {}
