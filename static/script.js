@@ -218,7 +218,9 @@ function showEndpointDetails(endpoint, categoryName) {
     
     const detailsHTML = `
         <h3>${endpoint.path}</h3>
-        <div class="endpoint-status ${/^(success|ok)$/i.test(endpoint.status) ? 'success' : 'error'}">
+        <div class="endpoint-status ${
+  endpoint.status.toLowerCase() === 'succses' ? 'success' : 'error'
+}">
   ${endpoint.status}
 </div>
 
