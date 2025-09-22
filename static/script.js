@@ -218,8 +218,9 @@ function showEndpointDetails(endpoint, categoryName) {
     
     const detailsHTML = `
         <h3>${endpoint.path}</h3>
-        <div class="endpoint-status ${endpoint.status === 'Succses' ? 'succses' : 'error'}"> ${endpoint.status}
-        </div>
+        <div class="endpoint-status ${/^(success|ok)$/i.test(endpoint.status) ? 'success' : 'error'}">
+  ${endpoint.status}
+</div>
 
         <div class="endpoint-url">
             https://berak.my.id/${endpoint.path}
