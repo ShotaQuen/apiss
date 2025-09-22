@@ -132,6 +132,13 @@ body {
     color: var(--primary-color);
 }
 
+.nav-logo {
+  width: 24px;   /* atur ukuran icon */
+  height: 24px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
 .nav-link.active::after {
     content: '';
     position: absolute;
