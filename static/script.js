@@ -185,7 +185,7 @@ function getCategoryIcon(categoryName) {
         'Tools': 'tools',
         'Search': 'search',
         'Random': 'random',
-        'Bmkg': 'house-crack'
+        'Bmkg': 'house-crack',
         'Stalk': 'user-secret'
     };
     return icons[categoryName] || 'code';
