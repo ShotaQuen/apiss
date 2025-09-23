@@ -32,7 +32,7 @@ router.get("/cuaca", async (req, res) => {
       });
     }
 
-    const result = await cuaca(url);
+    const result = await cuaca(kode);
 
     res.json({
       status: true,
