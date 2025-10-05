@@ -8,6 +8,7 @@ require("dotenv").config();
 require("./settings/module.js");
 
 const { createClient } = require("@supabase/supabase-js");
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -17,11 +18,14 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Serve static files
 app.use(express.static(path.join(__dirname, "static")));
 
 // === Middleware global untuk hitung request ===
 app.use(async (req, res, next) => {
   try {
+    // ambil baris pertama
     const { data, error } = await supabase
       .from("request_count")
       .select("id, total")
@@ -31,7 +35,8 @@ app.use(async (req, res, next) => {
     if (error) console.error("❌ Supabase select error:", error);
 
     if (data) {
-      await supabase.from("request_count")
+      await supabase
+        .from("request_count")
         .update({ total: data.total + 1 })
         .eq("id", data.id);
     } else {
@@ -53,7 +58,11 @@ app.get("/api/requests", async (req, res) => {
       .maybeSingle();
 
     if (error) throw new Error(error.message);
-    res.json({ status: true, total_requests: data ? data.total : 0 });
+
+    res.json({
+      status: true,
+      total_requests: data ? data.total : 0,
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -80,8 +89,6 @@ const loadRoutes = () => {
   const categories = {};
   let totalEndpoints = 0;
 
-  const loadedEndpoints = new Map(); // key = method+path → value = { file, status }
-
   const extractPathParams = (routePath) => {
     const regex = /:([a-zA-Z0-9_]+)/g;
     let match, params = [];
@@ -103,104 +110,43 @@ const loadRoutes = () => {
   };
 
   const apiRouteFiles = readFilesRecursive(apiRoutesDir);
-
   for (const file of apiRouteFiles) {
     const relativePath = path.relative(apiRoutesDir, file).replace(/\\/g, "/");
     const routeName = relativePath.replace(".js", "");
     const categoryName = routeName.split("/")[0];
+    const routeModule = require(file);
+
     const urlPrefix = "/" + categoryName;
+    app.use(urlPrefix, routeModule);
 
-    let routeModule;
-    let isErrorModule = false;
+    const fileContent = fs.readFileSync(file, "utf8");
+    const moduleEndpoints = [];
 
-    try {
-      delete require.cache[require.resolve(file)];
-      routeModule = require(file);
-    } catch (err) {
-      console.error(`⚠️ Gagal load route: ${file}\n   Error: ${err.message}`);
-      isErrorModule = true;
-    }
-
-    // Kalau error total (tidak ada module sama sekali)
-    if (isErrorModule && !routeModule) continue;
-
-    try {
-      app.use(urlPrefix, routeModule);
-      const fileContent = fs.readFileSync(file, "utf8");
-      const moduleEndpoints = [];
-
-      // Ambil semua endpoint dari file
-      routeModule.stack.forEach((layer) => {
-        if (layer.route) {
-          const routePath = layer.route.path;
-          const methods = Object.keys(layer.route.methods);
-
-          methods.forEach((method) => {
-            const endpointKey = `${method.toUpperCase()} ${urlPrefix}${routePath}`;
-            const existing = loadedEndpoints.get(endpointKey);
-
-            if (existing) {
-              // Jika sudah ada endpoint sebelumnya
-              if (existing.isError && !isErrorModule) {
-                // endpoint sebelumnya error, yang baru normal → hapus file error
-                try {
-                  fs.unlinkSync(existing.file);
-                  console.log(`🗑️ Hapus file error duplikat: ${existing.file}`);
-                } catch (e) {
-                  console.warn(`⚠️ Gagal hapus file: ${existing.file}`);
-                }
-                loadedEndpoints.set(endpointKey, { file, isError: false });
-              } else if (!existing.isError && isErrorModule) {
-                // endpoint lama normal, yang baru error → hapus yang error
-                try {
-                  fs.unlinkSync(file);
-                  console.log(`🗑️ Hapus file error duplikat: ${file}`);
-                } catch (e) {
-                  console.warn(`⚠️ Gagal hapus file: ${file}`);
-                }
-              } else {
-                // keduanya normal → hapus file baru agar tidak duplikat
-                try {
-                  fs.unlinkSync(file);
-                  console.log(`⚠️ Duplikat endpoint normal dihapus: ${file}`);
-                } catch (e) {
-                  console.warn(`⚠️ Gagal hapus file duplikat: ${file}`);
-                }
-              }
-              return; // skip endpoint ini
-            }
-
-            // kalau belum ada, tambahkan ke map
-            loadedEndpoints.set(endpointKey, { file, isError: isErrorModule });
-
-            moduleEndpoints.push({
-              path: `${urlPrefix}${routePath}`,
-              method: method.toUpperCase(),
-              example_response: routeModule.example_response || null,
-              params: [
-                ...extractPathParams(routePath),
-                ...extractQueryParams(fileContent),
-              ],
-            });
+    routeModule.stack.forEach((layer) => {
+      if (layer.route) {
+        const routePath = layer.route.path;
+        const methods = Object.keys(layer.route.methods);
+        methods.forEach((method) => {
+          moduleEndpoints.push({
+            path: `${urlPrefix}${routePath}`,
+            method: method.toUpperCase(),
+            example_response: routeModule.example_response || null,
+            params: [...extractPathParams(routePath), ...extractQueryParams(fileContent)],
           });
-        }
-      });
-
-      const categoryKey = categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
-      if (!categories[categoryKey]) {
-        categories[categoryKey] = {
-          description: `APIs for ${categoryName}`,
-          endpoints: [],
-        };
+        });
       }
+    });
 
-      moduleEndpoints.forEach((ep) => {
+    const categoryKey = categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
+    if (!categories[categoryKey]) {
+      categories[categoryKey] = { description: `APIs for ${categoryName}`, endpoints: [] };
+    }
+    moduleEndpoints.forEach((ep) => {
+      if (!categories[categoryKey].endpoints.some((e) => e.path === ep.path && e.method === ep.method)) {
         categories[categoryKey].endpoints.push(ep);
         totalEndpoints++;
-      });
-    } catch (err) {
-      console.error(`❌ Error saat memproses route ${file}: ${err.message}`);
-    }
+      }
+    });
   }
 
   return { categories, totalEndpoints };
@@ -210,12 +156,7 @@ const { categories, totalEndpoints } = loadRoutes();
 
 // === Endpoint Dokumentasi API ===
 app.get("/api", async (req, res) => {
-  const { data } = await supabase
-    .from("request_count")
-    .select("total")
-    .limit(1)
-    .maybeSingle();
-
+  const { data } = await supabase.from("request_count").select("total").limit(1).maybeSingle();
   res.json({
     status: true,
     creator: "Ikann",
@@ -228,7 +169,15 @@ app.get("/api", async (req, res) => {
 
 // === API check ===
 app.get("/api/check", async (req, res) => {
-  const apiUrl = "https://berak-new-pjq3.vercel.app/api";
+  const apiUrl = "https://berak-new-pjq3.vercel.app/api"; // pakai API utama
+
+  let apiDoc = {
+    status: true,
+    creator: "Ikann",
+    message: "Welcome to REST API Documentation",
+    total_endpoints: 0,
+    categories: {}
+  };
 
   try {
     const response = await axios.get(apiUrl, { timeout: 5000 });
@@ -237,58 +186,76 @@ app.get("/api/check", async (req, res) => {
     let totalEndpoints = 0;
     let categories = {};
 
+    // Loop kategori
     for (const [categoryName, category] of Object.entries(data.categories)) {
       const endpointsArr = [];
 
-      for (const endpoint of category.endpoints || []) {
-        totalEndpoints++;
-        let urlRest = `https://berak-new-pjq3.vercel.app${endpoint.path}`;
-        if (endpoint.params?.length > 0) {
-          const queryParams = endpoint.params
-            .map((param, idx) => `${param}=test${idx}`)
-            .join("&");
-          urlRest += `?${queryParams}`;
+      if (category.endpoints && category.endpoints.length > 0) {
+        for (const endpoint of category.endpoints) {
+          totalEndpoints++;
+
+          // Bangun URL test dengan params
+          let urlRest = `https://berak-new-pjq3.vercel.app${endpoint.path}`;
+          if (endpoint.params && endpoint.params.length > 0) {
+            const queryParams = endpoint.params.map((param, idx) => {
+              if (param === "url") return `${param}=${encodeURIComponent(endpoint.example_response)}`;
+              return `${param}=test${idx}`;
+            }).join("&");
+            urlRest += `?${queryParams}`;
+          }
+
+          // Default endpoint data
+          const epData = {
+            path: endpoint.path,
+            method: endpoint.method,
+            example_response: endpoint.example_response,
+            params: endpoint.params || []
+          };
+
+          // Cek status endpoint
+          try {
+            const check = await axios.get(urlRest, { timeout: 5000 });
+            epData.status = check.status === 200 ? "OK" : "ERROR";
+          } catch (err) {
+            if (err.response) {
+              epData.status = `ERROR`;
+            } else if (err.request) {
+              epData.status = "NO RESPONSE";
+            } else {
+              epData.status = "ERROR";
+            }
+          }
+
+          endpointsArr.push(epData);
         }
-
-        const epData = {
-          path: endpoint.path,
-          method: endpoint.method,
-          example_response: endpoint.example_response,
-          params: endpoint.params || [],
-        };
-
-        try {
-          const check = await axios.get(urlRest, { timeout: 5000 });
-          epData.status = check.status === 200 ? "OK" : "ERROR";
-        } catch {
-          epData.status = "ERROR";
-        }
-
-        endpointsArr.push(epData);
       }
 
       categories[categoryName] = {
         description: category.description || "",
-        endpoints: endpointsArr,
+        endpoints: endpointsArr
       };
     }
 
-    res.json({
+    // Update apiDoc
+    apiDoc = {
       status: true,
-      creator: "Ikann",
+      creator: "REST API Website",
       message: "Welcome to REST API Documentation",
       total_endpoints: totalEndpoints,
-      categories,
-    });
+      categories
+    };
   } catch (error) {
-    res.json({
+    apiDoc = {
       status: false,
-      creator: "Ikann",
+      creator: "REST API Website",
       message: `Gagal ambil data dari ${apiUrl}: ${error.message}`,
       total_endpoints: 0,
-      categories: {},
-    });
+      categories: {}
+    };
   }
+
+  // Kirim response
+  res.json(apiDoc);
 });
 
 // SPA support
