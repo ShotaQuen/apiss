@@ -259,7 +259,7 @@ app.get("/api/check", async (req, res) => {
 });
 
 // === API Cleanup ===
-router.get("/api/clean", async (req, res) => {
+app.get("/api/clean", async (req, res) => {
   try {
     const { data } = await axios.get("https://berak-new-pjq3.vercel.app/api/check");
 
