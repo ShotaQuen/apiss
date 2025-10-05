@@ -284,10 +284,17 @@ app.get("/api/clean", async (req, res) => {
       });
     }
 
-    // Group berdasarkan path & method (abaikan kategori)
+    // Fungsi ambil nama terakhir dari path (contoh: /search/ytmp3 → ytmp3)
+    const getLastName = (path) => {
+      const parts = path.split("/");
+      return parts.filter(Boolean).pop() || "";
+    };
+
+    // Group berdasarkan nama terakhir dan method
     const grouped = {};
     for (const ep of allEndpoints) {
-      const key = `${ep.method}:${ep.path}`;
+      const lastName = getLastName(ep.path);
+      const key = `${ep.method}:${lastName}`;
       if (!grouped[key]) grouped[key] = [];
       grouped[key].push(ep);
     }
@@ -296,29 +303,28 @@ app.get("/api/clean", async (req, res) => {
     let kept = [];
 
     for (const [key, list] of Object.entries(grouped)) {
-      const hasOK = list.some((x) => x.status === "OK");
-      const hasError = list.some((x) => x.status === "ERROR");
+      const oks = list.filter((x) => x.status === "OK");
+      const errors = list.filter((x) => x.status === "ERROR");
 
-      if (hasOK && hasError) {
-        // Hapus yang error walaupun beda kategori
-        list
-          .filter((x) => x.status === "ERROR")
-          .forEach((errEp) => {
-            removed.push(errEp);
-          });
-
-        kept.push(...list.filter((x) => x.status === "OK"));
+      // Jika ada versi OK dan ERROR, maka hapus ERROR
+      if (oks.length > 0 && errors.length > 0) {
+        removed.push(...errors);
+        kept.push(...oks);
       } else {
         kept.push(...list);
       }
     }
+
+    // Filter supaya hanya endpoint yang dihapus ditampilkan
+    const showRemovedOnly = removed.length > 0 ? removed : "Tidak ada endpoint error yang duplikat dengan OK";
 
     res.json({
       status: true,
       message: "Pengecekan selesai",
       total_removed: removed.length,
       total_kept: kept.length,
-      removed,
+      removed: showRemovedOnly,
+      kept_preview: kept.slice(0, 5) // biar tidak terlalu panjang
     });
   } catch (err) {
     res.status(500).json({
@@ -328,6 +334,7 @@ app.get("/api/clean", async (req, res) => {
     });
   }
 });
+
 // SPA support
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "static", "index.html"));
