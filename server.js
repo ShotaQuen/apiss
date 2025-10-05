@@ -259,92 +259,74 @@ app.get("/api/check", async (req, res) => {
 });
 
 // === API Cleanup ===
-app.get("/api/cleanup", async (req, res) => {
-  const apiRoutesDir = path.join(__dirname, "routes", "api");
+router.get("api/clean", async (req, res) => {
+  try {
+    const { data } = await axios.get("https://berak-new-pjq3.vercel.app/api/check");
 
-  const readFilesRecursive = (dir) => {
-    let result = [];
-    fs.readdirSync(dir).forEach((file) => {
-      const fullPath = path.join(dir, file);
-      if (fs.statSync(fullPath).isDirectory()) {
-        result = result.concat(readFilesRecursive(fullPath));
-      } else if (file.endsWith(".js")) {
-        result.push(fullPath);
+    if (!data.status || !data.categories) {
+      return res.status(400).json({
+        status: false,
+        message: "Data dari API check tidak valid",
+      });
+    }
+
+    let removed = [];
+    let kept = [];
+
+    // Loop tiap kategori
+    for (const [category, info] of Object.entries(data.categories)) {
+      const endpoints = info.endpoints;
+
+      // Kelompokkan endpoint berdasarkan path + method
+      const grouped = {};
+      for (const ep of endpoints) {
+        const key = `${ep.method}:${ep.path}`;
+        if (!grouped[key]) grouped[key] = [];
+        grouped[key].push(ep);
       }
-    });
-    return result;
-  };
 
-  const apiRouteFiles = readFilesRecursive(apiRoutesDir);
-  const endpoints = [];
+      // Deteksi duplikat yang salah (ERROR)
+      for (const [key, list] of Object.entries(grouped)) {
+        const hasOK = list.some((x) => x.status === "OK");
+        const hasError = list.some((x) => x.status === "ERROR");
 
-  // Step 1: Ambil semua endpoint (termasuk yang error)
-  for (const file of apiRouteFiles) {
-    try {
-      const relativePath = path.relative(apiRoutesDir, file).replace(/\\/g, "/");
-      const routeName = relativePath.replace(".js", "");
-      const categoryName = routeName.split("/")[0];
-      const urlPrefix = "/" + categoryName;
-
-      const routeModule = require(file);
-      routeModule.stack.forEach((layer) => {
-        if (layer.route) {
-          const methods = Object.keys(layer.route.methods);
-          methods.forEach((method) => {
-            endpoints.push({
-              file,
-              path: `${urlPrefix}${layer.route.path}`,
-              method: method.toUpperCase(),
-              error: false,
+        if (hasOK && hasError) {
+          // Hapus hanya yang error
+          list
+            .filter((x) => x.status === "ERROR")
+            .forEach((errEp) => {
+              removed.push({
+                category,
+                path: errEp.path,
+                method: errEp.method,
+                status: errEp.status,
+              });
             });
-          });
+
+          // Simpan yang OK
+          kept.push(...list.filter((x) => x.status === "OK"));
+        } else {
+          // Kalau semua OK atau semua ERROR, biarkan saja
+          kept.push(...list);
         }
-      });
-    } catch (err) {
-      endpoints.push({
-        file,
-        path: null,
-        method: null,
-        error: true,
-      });
-      console.error(`❌ Error load: ${file} — ${err.message}`);
-    }
-  }
-
-  // Step 2: Hapus endpoint yang duplikat dan error
-  const unique = [];
-  const removed = [];
-
-  endpoints.forEach((ep) => {
-    const duplicate = unique.find(
-      (u) => u.path === ep.path && u.method === ep.method
-    );
-    if (!duplicate) {
-      unique.push(ep);
-    } else {
-      // kalau duplikat & error → hapus dari daftar
-      if (ep.error) {
-        removed.push(ep);
-        console.log(`🗑️ Hapus endpoint duplikat-error: ${ep.file}`);
       }
     }
-  });
 
-  // Step 3: Buat hasil
-  res.json({
-    status: true,
-    message: "Cleanup selesai",
-    total_files: apiRouteFiles.length,
-    total_endpoints: unique.length,
-    removed: removed.map((r) => ({
-      file: r.file,
-      error: r.error,
-      path: r.path,
-      method: r.method,
-    })),
-  });
+    res.json({
+      status: true,
+      message: "Pengecekan selesai",
+      total_removed: removed.length,
+      total_kept: kept.length,
+      removed,
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: false,
+      message: "Gagal memproses data",
+      error: err.message,
+    });
+  }
 });
-
 // SPA support
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "static", "index.html"));
