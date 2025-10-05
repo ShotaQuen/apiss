@@ -270,45 +270,46 @@ app.get("/api/clean", async (req, res) => {
       });
     }
 
+    let allEndpoints = [];
+
+    // Gabungkan semua kategori jadi satu daftar global
+    for (const [category, info] of Object.entries(data.categories)) {
+      info.endpoints.forEach((ep) => {
+        allEndpoints.push({
+          category,
+          path: ep.path,
+          method: ep.method,
+          status: ep.status,
+        });
+      });
+    }
+
+    // Group berdasarkan path & method (abaikan kategori)
+    const grouped = {};
+    for (const ep of allEndpoints) {
+      const key = `${ep.method}:${ep.path}`;
+      if (!grouped[key]) grouped[key] = [];
+      grouped[key].push(ep);
+    }
+
     let removed = [];
     let kept = [];
 
-    // Loop tiap kategori
-    for (const [category, info] of Object.entries(data.categories)) {
-      const endpoints = info.endpoints;
+    for (const [key, list] of Object.entries(grouped)) {
+      const hasOK = list.some((x) => x.status === "OK");
+      const hasError = list.some((x) => x.status === "ERROR");
 
-      // Kelompokkan endpoint berdasarkan path + method
-      const grouped = {};
-      for (const ep of endpoints) {
-        const key = `${ep.method}:${ep.path}`;
-        if (!grouped[key]) grouped[key] = [];
-        grouped[key].push(ep);
-      }
+      if (hasOK && hasError) {
+        // Hapus yang error walaupun beda kategori
+        list
+          .filter((x) => x.status === "ERROR")
+          .forEach((errEp) => {
+            removed.push(errEp);
+          });
 
-      // Deteksi duplikat yang salah (ERROR)
-      for (const [key, list] of Object.entries(grouped)) {
-        const hasOK = list.some((x) => x.status === "OK");
-        const hasError = list.some((x) => x.status === "ERROR");
-
-        if (hasOK && hasError) {
-          // Hapus hanya yang error
-          list
-            .filter((x) => x.status === "ERROR")
-            .forEach((errEp) => {
-              removed.push({
-                category,
-                path: errEp.path,
-                method: errEp.method,
-                status: errEp.status,
-              });
-            });
-
-          // Simpan yang OK
-          kept.push(...list.filter((x) => x.status === "OK"));
-        } else {
-          // Kalau semua OK atau semua ERROR, biarkan saja
-          kept.push(...list);
-        }
+        kept.push(...list.filter((x) => x.status === "OK"));
+      } else {
+        kept.push(...list);
       }
     }
 
