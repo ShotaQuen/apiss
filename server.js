@@ -270,61 +270,42 @@ app.get("/api/clean", async (req, res) => {
       });
     }
 
-    let allEndpoints = [];
+    const cleanedCategories = {};
+    let totalEndpoints = 0;
 
-    // Gabungkan semua kategori jadi satu daftar global
+    // Loop semua kategori
     for (const [category, info] of Object.entries(data.categories)) {
-      info.endpoints.forEach((ep) => {
-        allEndpoints.push({
-          category,
-          path: ep.path,
-          method: ep.method,
-          status: ep.status,
-        });
-      });
-    }
+      const endpoints = info.endpoints || [];
+      const grouped = {};
 
-    // Fungsi ambil nama terakhir dari path (contoh: /search/ytmp3 → ytmp3)
-    const getLastName = (path) => {
-      const parts = path.split("/");
-      return parts.filter(Boolean).pop() || "";
-    };
-
-    // Group berdasarkan nama terakhir dan method
-    const grouped = {};
-    for (const ep of allEndpoints) {
-      const lastName = getLastName(ep.path);
-      const key = `${ep.method}:${lastName}`;
-      if (!grouped[key]) grouped[key] = [];
-      grouped[key].push(ep);
-    }
-
-    let removed = [];
-    let kept = [];
-
-    for (const [key, list] of Object.entries(grouped)) {
-      const oks = list.filter((x) => x.status === "OK");
-      const errors = list.filter((x) => x.status === "ERROR");
-
-      // Jika ada versi OK dan ERROR, maka hapus ERROR
-      if (oks.length > 0 && errors.length > 0) {
-        removed.push(...errors);
-        kept.push(...oks);
-      } else {
-        kept.push(...list);
+      // Kelompokkan endpoint berdasarkan "method:path"
+      for (const ep of endpoints) {
+        const key = `${ep.method}:${ep.path}`;
+        if (!grouped[key]) grouped[key] = [];
+        grouped[key].push(ep);
       }
-    }
 
-    // Filter supaya hanya endpoint yang dihapus ditampilkan
-    const showRemovedOnly = removed.length > 0 ? removed : "Tidak ada endpoint error yang duplikat dengan OK";
+      // Bersihkan duplikat (hapus yang ERROR jika ada versi OK)
+      const cleanedEndpoints = [];
+      for (const [key, list] of Object.entries(grouped)) {
+        const okEp = list.find((x) => x.status === "OK");
+        if (okEp) cleanedEndpoints.push(okEp);
+        else cleanedEndpoints.push(list[0]); // kalau semua ERROR, ambil satu saja
+      }
+
+      totalEndpoints += cleanedEndpoints.length;
+      cleanedCategories[category] = {
+        description: info.description,
+        endpoints: cleanedEndpoints,
+      };
+    }
 
     res.json({
       status: true,
-      message: "Pengecekan selesai",
-      total_removed: removed.length,
-      total_kept: kept.length,
-      removed: showRemovedOnly,
-      kept_preview: kept.slice(0, 5) // biar tidak terlalu panjang
+      creator: "REST API Website",
+      message: "Welcome to REST API Documentation",
+      total_endpoints: totalEndpoints,
+      categories: cleanedCategories,
     });
   } catch (err) {
     res.status(500).json({
