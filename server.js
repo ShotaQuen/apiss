@@ -258,6 +258,93 @@ app.get("/api/check", async (req, res) => {
   res.json(apiDoc);
 });
 
+// === API Cleanup ===
+app.get("/api/cleanup", async (req, res) => {
+  const apiRoutesDir = path.join(__dirname, "routes", "api");
+
+  const readFilesRecursive = (dir) => {
+    let result = [];
+    fs.readdirSync(dir).forEach((file) => {
+      const fullPath = path.join(dir, file);
+      if (fs.statSync(fullPath).isDirectory()) {
+        result = result.concat(readFilesRecursive(fullPath));
+      } else if (file.endsWith(".js")) {
+        result.push(fullPath);
+      }
+    });
+    return result;
+  };
+
+  const apiRouteFiles = readFilesRecursive(apiRoutesDir);
+  const endpoints = [];
+
+  // Step 1: Ambil semua endpoint (termasuk yang error)
+  for (const file of apiRouteFiles) {
+    try {
+      const relativePath = path.relative(apiRoutesDir, file).replace(/\\/g, "/");
+      const routeName = relativePath.replace(".js", "");
+      const categoryName = routeName.split("/")[0];
+      const urlPrefix = "/" + categoryName;
+
+      const routeModule = require(file);
+      routeModule.stack.forEach((layer) => {
+        if (layer.route) {
+          const methods = Object.keys(layer.route.methods);
+          methods.forEach((method) => {
+            endpoints.push({
+              file,
+              path: `${urlPrefix}${layer.route.path}`,
+              method: method.toUpperCase(),
+              error: false,
+            });
+          });
+        }
+      });
+    } catch (err) {
+      endpoints.push({
+        file,
+        path: null,
+        method: null,
+        error: true,
+      });
+      console.error(`❌ Error load: ${file} — ${err.message}`);
+    }
+  }
+
+  // Step 2: Hapus endpoint yang duplikat dan error
+  const unique = [];
+  const removed = [];
+
+  endpoints.forEach((ep) => {
+    const duplicate = unique.find(
+      (u) => u.path === ep.path && u.method === ep.method
+    );
+    if (!duplicate) {
+      unique.push(ep);
+    } else {
+      // kalau duplikat & error → hapus dari daftar
+      if (ep.error) {
+        removed.push(ep);
+        console.log(`🗑️ Hapus endpoint duplikat-error: ${ep.file}`);
+      }
+    }
+  });
+
+  // Step 3: Buat hasil
+  res.json({
+    status: true,
+    message: "Cleanup selesai",
+    total_files: apiRouteFiles.length,
+    total_endpoints: unique.length,
+    removed: removed.map((r) => ({
+      file: r.file,
+      error: r.error,
+      path: r.path,
+      method: r.method,
+    })),
+  });
+});
+
 // SPA support
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "static", "index.html"));
