@@ -14,7 +14,7 @@ async function bmkg() {
   }
 }
 
-router.get("/cuaca", async (req, res) => {
+router.get("/autogempa", async (req, res) => {
   try {
     const result = await bmkg(kode);
 
