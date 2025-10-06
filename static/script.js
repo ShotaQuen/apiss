@@ -108,7 +108,7 @@ function updateActiveNavLink() {
 async function loadApiDocumentation() {
     try {
         showLoading();
-        const response = await fetch('/api/check');
+        const response = await fetch('/api/clean');
         apiData = await response.json();
         
         if (apiData.status) {
