@@ -16,7 +16,7 @@ async function bmkg() {
 
 router.get("/autogempa", async (req, res) => {
   try {
-    const result = await bmkg(kode);
+    const result = await bmkg();
 
     res.json({
       status: true,
