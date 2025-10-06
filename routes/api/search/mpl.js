@@ -40,6 +40,7 @@ router.get("/mpl", async (req, res) => {
       creator: "BerakNews",
       result
     });
+    console.log(result)
   } catch (error) {
     console.error(error);
     res.status(500).json({
