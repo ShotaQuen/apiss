@@ -278,7 +278,6 @@
 
       // masukkan ke HTML (JSON style)
       document.getElementById("endpoints-total").textContent = total;
-      document.getElementById("totalRequests").textContent = data.total_requests ?? "N/A";
       document.getElementById("categories-list").textContent = JSON.stringify(categories);
 
       // isi section features
@@ -322,7 +321,7 @@
     fetch("https://berak-new-pjq3.vercel.app/api")
     .then(res => res.json())
     .then(data => {
-        document.getElementById("totalRequests").textContent = data.total_requests;
+        document.getElementById("totalRequests").textContent = data.total_requests ?? "N/A";
     })
     .catch(err => {
       document.getElementById("categories-list").textContent = `["ERROR: ${err.message}"]`;
