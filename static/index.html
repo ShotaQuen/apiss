@@ -318,6 +318,12 @@
       }
      console.error(err);
     });
+
+    fetch("https://berak-new-pjq3.vercel.app/api/clean")
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("totalRequests").textContent = data.total_requests ?? "N/A";
+    })
     
     fetch("https://berak-new-pjq3.vercel.app/api/clean")
     .then(res => res.json())
