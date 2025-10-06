@@ -263,7 +263,7 @@ app.get("/api/clean", async (req, res) => {
   try {
     const { data } = await axios.get("https://berak-new-pjq3.vercel.app/api/check");
 
-    if (!data.status || !data.categories) {
+    if (!data || !data.status || !data.categories) {
       return res.status(400).json({
         status: false,
         message: "Data dari API check tidak valid",
@@ -273,24 +273,23 @@ app.get("/api/clean", async (req, res) => {
     const cleanedCategories = {};
     let totalEndpoints = 0;
 
-    // Loop semua kategori
     for (const [category, info] of Object.entries(data.categories)) {
       const endpoints = info.endpoints || [];
       const grouped = {};
 
-      // Kelompokkan endpoint berdasarkan "method:path"
       for (const ep of endpoints) {
         const key = `${ep.method}:${ep.path}`;
         if (!grouped[key]) grouped[key] = [];
         grouped[key].push(ep);
       }
 
-      // Bersihkan duplikat (hapus yang ERROR jika ada versi OK)
       const cleanedEndpoints = [];
-      for (const [key, list] of Object.entries(grouped)) {
+      for (const list of Object.values(grouped)) {
         const okEp = list.find((x) => x.status === "OK");
-        if (okEp) cleanedEndpoints.push(okEp);
-        else cleanedEndpoints.push(list[0]); // kalau semua ERROR, ambil satu saja
+        if (okEp) {
+          cleanedEndpoints.push(okEp);
+        }
+        // else skip if all ERROR
       }
 
       totalEndpoints += cleanedEndpoints.length;
@@ -300,7 +299,7 @@ app.get("/api/clean", async (req, res) => {
       };
     }
 
-    res.json({
+    return res.status(200).json({
       status: true,
       creator: "REST API Website",
       message: "Welcome to REST API Documentation",
@@ -308,7 +307,8 @@ app.get("/api/clean", async (req, res) => {
       categories: cleanedCategories,
     });
   } catch (err) {
-    res.status(500).json({
+    console.error("Error processing /api/clean:", err);
+    return res.status(500).json({
       status: false,
       message: "Gagal memproses data",
       error: err.message,
