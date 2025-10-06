@@ -1,15 +1,9 @@
 async function bmkg() {
   try {
     const res = await axios.get(`https://data.bmkg.go.id/DataMKG/TEWS/autogempa.json`)
-    const data = res.data
-
-    if (!data || !data.data || !data.data[0] || !data.data[0].cuaca) {
-      throw new Error("Data cuaca tidak tersedia")
-    }
-
-    return data
+    return res.data
   } catch (err) {
-    console.error("Gagal ambil cuaca:", err.message)
+    console.error(err.message)
     return null
   }
 }
