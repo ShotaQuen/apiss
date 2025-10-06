@@ -32,4 +32,5 @@ router.get("/autogempa", async (req, res) => {
   }
 });
 
+router.example_response = "";
 module.exports = router;
