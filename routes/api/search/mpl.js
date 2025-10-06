@@ -1,3 +1,6 @@
+const axios = require('axios')
+const cheerio = require('cheerio')
+
 async function mplrank() {
   try {
     const { data } = await axios.get('https://id-mpl.com/');
@@ -31,7 +34,6 @@ async function mplrank() {
 
 router.get("/mpl", async (req, res) => {
   try {
-    
     const result = mplrank()
     res.json({
       status: true,
@@ -46,6 +48,4 @@ router.get("/mpl", async (req, res) => {
     });
   }
 });
-
-router.example_response = "";
 module.exports = router;
