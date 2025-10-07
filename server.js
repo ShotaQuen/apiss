@@ -284,13 +284,13 @@ app.get("/api/clean", async (req, res) => {
       }
 
       const cleanedEndpoints = [];
-      /*for (const list of Object.values(grouped)) {
+      for (const list of Object.values(grouped)) {
         const okEp = list.find((x) => x.status === "OK");
         if (okEp) {
           cleanedEndpoints.push(okEp);
         }
         // else skip if all ERROR
-      }*/
+      }
 
       totalEndpoints += cleanedEndpoints.length;
       cleanedCategories[category] = {
