@@ -26,5 +26,5 @@ router.get("/gempadirasakan", async (req, res) => {
   }
 });
 
-router.example_response = null;
+router.example_response = "-"
 module.exports = router;

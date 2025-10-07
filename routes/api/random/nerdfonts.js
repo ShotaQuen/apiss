@@ -28,7 +28,7 @@ async function nerdfonts() {
             }
         });
         
-        return result.slice(0, 5)
+        return result
     } catch (error) {
         throw new Error(error.message);
     }
@@ -52,5 +52,5 @@ router.get("/nerdfonts", async (req, res) => {
   }
 });
 
-router.example_response = null;
+router.example_response = "-";
 module.exports = router;
