@@ -26,5 +26,5 @@ router.get("/gempaterkini", async (req, res) => {
   }
 });
 
-router.example_response = "";
+router.example_response = null;
 module.exports = router;
