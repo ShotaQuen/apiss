@@ -265,7 +265,7 @@
     }
   };
 
-  fetch("https://berak-new-pjq3.vercel.app/api/clean")
+  fetch("https://apiss-snowy.vercel.app/api/clean")
     .then(res => res.json())
     .then(data => {
       // hitung total endpoint
@@ -318,7 +318,7 @@
      console.error(err);
     });
 
-    fetch("https://berak-new-pjq3.vercel.app/api")
+    fetch("https://apiss-snowy.vercel.app/api")
     .then(res => res.json())
     .then(data => {
         document.getElementById("totalRequests").textContent = data.total_requests ?? "N/A";
@@ -332,7 +332,7 @@
      console.error(err);
     });
     
-    fetch("https://berak-new-pjq3.vercel.app/api/clean")
+    fetch("https://apiss-snowy.vercel.app/api/check")
     .then(res => res.json())
     .then(data => {
         let success = 0;

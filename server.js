@@ -169,7 +169,7 @@ app.get("/api", async (req, res) => {
 
 // === API check ===
 app.get("/api/check", async (req, res) => {
-  const apiUrl = "https://berak-new-pjq3.vercel.app/api"; // pakai API utama
+  const apiUrl = "https://apiss-snowy.vercel.app/api"; // pakai API utama
 
   let apiDoc = {
     status: true,
@@ -261,7 +261,7 @@ app.get("/api/check", async (req, res) => {
 // === API Cleanup ===
 app.get("/api/clean", async (req, res) => {
   try {
-    const { data } = await axios.get("https://berak-new-pjq3.vercel.app/api/check");
+    const { data } = await axios.get("https://apiss-snowy.vercel.app/api/check");
 
     if (!data || !data.status || !data.categories) {
       return res.status(400).json({
