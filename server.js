@@ -115,10 +115,9 @@ const loadRoutes = () => {
     const relativePath = path.relative(apiRoutesDir, file).replace(/\\/g, "/");
     const routeName = relativePath.replace(".js", "");
     const categoryName = routeName.split("/")[0];
+    const urlPrefix = "/" + categoryName; // Pindahkan deklarasi ke sini
     const routeModule = require(file);
     routeModules.push({ urlPrefix, routeModule });
-
-    const urlPrefix = "/" + categoryName;
     // app.use(urlPrefix, routeModule); // Pendaftaran router akan dilakukan setelah loop
 
     const fileContent = fs.readFileSync(file, "utf8");
