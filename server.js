@@ -201,7 +201,7 @@ app.get("/api/check", async (req, res) => {
           totalEndpoints++;
 
           // Bangun URL test dengan params
-          let urlRest = `https://apiss-snowy.vercel.app${endpoint.path}`;
+          let urlRest = `https://5000-ijvde9xp3oxixdop59w8q-676dd373.manus-asia.computer${endpoint.path}`;
           if (endpoint.params && endpoint.params.length > 0) {
             const queryParams = endpoint.params.map((param, idx) => {
               if (param === "url") return `${param}=${encodeURIComponent(endpoint.example_response)}`;
