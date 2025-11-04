@@ -110,14 +110,16 @@ const loadRoutes = () => {
   };
 
   const apiRouteFiles = readFilesRecursive(apiRoutesDir);
+  const routeModules = [];
   for (const file of apiRouteFiles) {
     const relativePath = path.relative(apiRoutesDir, file).replace(/\\/g, "/");
     const routeName = relativePath.replace(".js", "");
     const categoryName = routeName.split("/")[0];
     const routeModule = require(file);
+    routeModules.push({ urlPrefix, routeModule });
 
     const urlPrefix = "/" + categoryName;
-    app.use(urlPrefix, routeModule);
+    // app.use(urlPrefix, routeModule); // Pendaftaran router akan dilakukan setelah loop
 
     const fileContent = fs.readFileSync(file, "utf8");
     const moduleEndpoints = [];
@@ -149,10 +151,15 @@ const loadRoutes = () => {
     });
   }
 
-  return { categories, totalEndpoints };
+  return { categories, totalEndpoints, routeModules };
 };
 
-const { categories, totalEndpoints } = loadRoutes();
+const { categories, totalEndpoints, routeModules } = loadRoutes();
+
+// Daftarkan semua router yang telah dimuat
+routeModules.forEach(({ urlPrefix, routeModule }) => {
+  app.use(urlPrefix, routeModule);
+});
 
 // === Endpoint Dokumentasi API ===
 app.get("/api", async (req, res) => {
@@ -195,7 +202,7 @@ app.get("/api/check", async (req, res) => {
           totalEndpoints++;
 
           // Bangun URL test dengan params
-          let urlRest = `https://berak-new-pjq3.vercel.app${endpoint.path}`;
+          let urlRest = `https://apiss-snowy.vercel.app${endpoint.path}`;
           if (endpoint.params && endpoint.params.length > 0) {
             const queryParams = endpoint.params.map((param, idx) => {
               if (param === "url") return `${param}=${encodeURIComponent(endpoint.example_response)}`;
