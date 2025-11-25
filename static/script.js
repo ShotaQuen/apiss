@@ -108,7 +108,7 @@ function updateActiveNavLink() {
 async function loadApiDocumentation() {
     try {
         showLoading();
-        const response = await fetch('https://berak-new-pjq3.vercel.app/api/check');
+        const response = await fetch('https://apiss-snowy.vercel.app/api/check');
         apiData = await response.json();
         
         if (apiData.status) {
